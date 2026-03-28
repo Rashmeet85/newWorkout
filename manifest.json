@@ -1,0 +1,16 @@
+{
+  "name": "Hunter's System",
+  "short_name": "Hunter's System",
+  "description": "Rise through the ranks. 12-week RPG gym program.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#05050f",
+  "theme_color": "#05050f",
+  "orientation": "portrait-primary",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icon-192.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+  "categories": ["health", "fitness", "games"],
+  "lang": "en"
+}
