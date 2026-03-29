@@ -1,757 +1,3322 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Hunter's System">
-  <meta name="theme-color" content="#03030a" id="meta-theme">
-  <link rel="manifest" href="manifest.json">
-  <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
-  <link rel="apple-touch-icon" href="icon-192.png">
-  <title>Hunter's System</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Share+Tech+Mono&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HUNTER'S SYSTEM — Arise</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Orbitron:wght@400;500;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════
+   HUNTER'S SYSTEM — COMPLETE REDESIGN
+   Design: Glassmorphism × Solo Leveling × Apple
+═══════════════════════════════════════════════ */
+
+:root {
+  --bg-void:       #02020a;
+  --bg-deep:       #050510;
+  --bg-surface:    #0a0a1a;
+  --glass-bg:      rgba(255,255,255,0.035);
+  --glass-border:  rgba(255,255,255,0.07);
+  --glass-hover:   rgba(255,255,255,0.06);
+
+  --neon-purple:   #8b5cf6;
+  --neon-cyan:     #06b6d4;
+  --neon-blue:     #3b82f6;
+  --neon-pink:     #ec4899;
+  --neon-gold:     #f59e0b;
+  --neon-green:    #10b981;
+  --neon-red:      #ef4444;
+
+  --purple-glow:   rgba(139,92,246,0.3);
+  --cyan-glow:     rgba(6,182,212,0.3);
+  --blue-glow:     rgba(59,130,246,0.2);
+
+  --text-primary:  #f0f0ff;
+  --text-secondary:#9090b8;
+  --text-muted:    #50507a;
+
+  --font-display:  'Orbitron', monospace;
+  --font-ui:       'Rajdhani', sans-serif;
+  --font-body:     'Inter', sans-serif;
+
+  --r-sm: 8px;
+  --r-md: 14px;
+  --r-lg: 20px;
+  --r-xl: 28px;
+
+  --nav-h: 64px;
+  --sidebar-w: 220px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; scroll-behavior: smooth; }
+
+body {
+  background: var(--bg-void);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* ── ANIMATED BACKGROUND ── */
+.bg-ambient {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.bg-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(120px);
+  opacity: 0.12;
+  animation: orbFloat 20s ease-in-out infinite alternate;
+}
+.bg-orb-1 { width: 600px; height: 600px; background: var(--neon-purple); top: -200px; left: -100px; animation-duration: 25s; }
+.bg-orb-2 { width: 500px; height: 500px; background: var(--neon-cyan); bottom: -150px; right: -100px; animation-duration: 30s; animation-delay: -5s; }
+.bg-orb-3 { width: 400px; height: 400px; background: var(--neon-blue); top: 40%; left: 40%; animation-duration: 20s; animation-delay: -10s; }
+
+@keyframes orbFloat {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(60px, 40px) scale(1.15); }
+}
+
+/* Scanline overlay */
+.bg-ambient::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,0.03) 2px,
+    rgba(0,0,0,0.03) 4px
+  );
+  pointer-events: none;
+}
+
+/* ── TOP NAV ── */
+.top-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--nav-h);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  gap: 16px;
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  background: rgba(5,5,16,0.7);
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: var(--neon-purple);
+  text-decoration: none;
+  flex-shrink: 0;
+}
+.nav-logo-icon {
+  width: 28px; height: 28px;
+  background: linear-gradient(135deg, var(--neon-purple), var(--neon-cyan));
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+}
+
+.nav-tabs {
+  display: flex;
+  gap: 4px;
+  flex: 1;
+  justify-content: center;
+}
+
+.nav-tab {
+  background: none;
+  border: none;
+  padding: 8px 18px;
+  border-radius: var(--r-sm);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+.nav-tab:hover { color: var(--text-secondary); background: var(--glass-bg); }
+.nav-tab.active {
+  color: var(--neon-purple);
+  background: rgba(139,92,246,0.12);
+}
+.nav-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px; left: 50%; transform: translateX(-50%);
+  width: 60%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--neon-purple), transparent);
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.nav-rank-badge {
+  width: 36px; height: 36px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  background: linear-gradient(135deg, rgba(52,211,153,0.2), rgba(52,211,153,0.05));
+  border: 1px solid rgba(52,211,153,0.3);
+  color: var(--neon-green);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.nav-rank-badge:hover { border-color: var(--neon-green); box-shadow: 0 0 16px rgba(52,211,153,0.2); }
+
+/* ── MAIN LAYOUT ── */
+.app-shell {
+  padding-top: var(--nav-h);
+  min-height: 100vh;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── PAGES ── */
+.page { display: none; padding: 28px 28px 60px; max-width: 1400px; margin: 0 auto; }
+.page.active { display: block; animation: pageFadeIn 0.35s ease; }
+@keyframes pageFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── GLASS CARD ── */
+.glass {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--r-lg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+.glass:hover { border-color: rgba(255,255,255,0.1); }
+
+.glass-purple {
+  background: rgba(139,92,246,0.06);
+  border-color: rgba(139,92,246,0.2);
+}
+.glass-cyan {
+  background: rgba(6,182,212,0.06);
+  border-color: rgba(6,182,212,0.2);
+}
+.glass-gold {
+  background: rgba(245,158,11,0.06);
+  border-color: rgba(245,158,11,0.2);
+}
+
+/* ── SECTION LABEL ── */
+.section-label {
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--neon-purple);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.section-label::before {
+  content: '';
+  display: block;
+  width: 20px; height: 1px;
+  background: var(--neon-purple);
+}
+
+/* ══════════════════════════════════════════════
+   HOME PAGE
+══════════════════════════════════════════════ */
+.home-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: auto;
+  gap: 20px;
+}
+
+/* Hero Hunter Card */
+.hunter-hero {
+  grid-column: 1 / 2;
+  grid-row: 1 / 3;
+  padding: 28px;
+  position: relative;
+  overflow: hidden;
+  min-height: 340px;
+}
+.hunter-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(139,92,246,0.1) 0%, transparent 60%);
+  pointer-events: none;
+}
+.hunter-hero-inner {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.system-interface-tag {
+  font-family: var(--font-display);
+  font-size: 9px;
+  letter-spacing: 3px;
+  color: var(--neon-cyan);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.system-interface-tag::before, .system-interface-tag::after {
+  content: '';
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--neon-cyan);
+  animation: pulse 2s ease infinite;
+}
+.system-interface-tag::after { animation-delay: 0.5s; background: var(--neon-green); }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+.hunter-portrait {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.portrait-img {
+  width: 72px; height: 72px;
+  border-radius: 12px;
+  object-fit: cover;
+  border: 1px solid rgba(139,92,246,0.4);
+  box-shadow: 0 0 20px rgba(139,92,246,0.2);
+  flex-shrink: 0;
+  background: rgba(139,92,246,0.1);
+}
+.hunter-info { flex: 1; }
+.hunter-name {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  color: var(--text-primary);
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.hunter-rank-label {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: var(--neon-green);
+  margin-bottom: 4px;
+}
+.hunter-rank-msg {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-style: italic;
+  line-height: 1.4;
+}
+
+.xp-section { margin-top: auto; }
+.xp-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.xp-label {
+  font-family: var(--font-display);
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--text-muted);
+}
+.xp-value {
+  font-family: var(--font-display);
+  font-size: 11px;
+  color: var(--neon-purple);
+}
+.xp-bar-track {
+  height: 6px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+.xp-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--neon-purple), var(--neon-cyan));
+  border-radius: 3px;
+  transition: width 1s cubic-bezier(0.4,0,0.2,1);
+  position: relative;
+}
+.xp-bar-fill::after {
+  content: '';
+  position: absolute;
+  right: 0; top: 0; bottom: 0;
+  width: 40px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4));
+  border-radius: 3px;
+  animation: shimmer 2s ease infinite;
+}
+@keyframes shimmer { 0%,100%{opacity:0} 50%{opacity:1} }
+
+.hunter-stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.mini-stat {
+  text-align: center;
+  padding: 10px 6px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 10px;
+}
+.mini-stat-val {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.mini-stat-key {
+  font-family: var(--font-ui);
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+/* Quest Today Card */
+.quest-today {
+  grid-column: 2 / 4;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+}
+.quest-today::before {
+  content: '';
+  position: absolute;
+  top: -40px; right: -40px;
+  width: 200px; height: 200px;
+  background: radial-gradient(circle, rgba(6,182,212,0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+.quest-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+.quest-title-block {}
+.quest-title {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+.quest-subtitle {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+.quest-xp-badge {
+  padding: 6px 14px;
+  background: rgba(245,158,11,0.12);
+  border: 1px solid rgba(245,158,11,0.25);
+  border-radius: 20px;
+  font-family: var(--font-display);
+  font-size: 12px;
+  color: var(--neon-gold);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.exercise-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 260px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(139,92,246,0.3) transparent;
+}
+.ex-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.ex-row:hover { background: rgba(255,255,255,0.05); border-color: rgba(139,92,246,0.2); }
+.ex-row.done { border-color: rgba(52,211,153,0.2); background: rgba(52,211,153,0.03); }
+.ex-check {
+  width: 22px; height: 22px;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.1);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px;
+  flex-shrink: 0;
+  transition: all 0.2s;
+  background: rgba(255,255,255,0.02);
+}
+.ex-row.done .ex-check {
+  background: rgba(52,211,153,0.15);
+  border-color: var(--neon-green);
+  color: var(--neon-green);
+}
+.ex-name {
+  font-family: var(--font-ui);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  flex: 1;
+}
+.ex-row.done .ex-name { color: var(--text-muted); text-decoration: line-through; }
+.ex-sets-tag {
+  font-family: var(--font-display);
+  font-size: 10px;
+  padding: 3px 8px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 4px;
+  color: var(--text-muted);
+}
+.ex-type-cardio { color: var(--neon-cyan); }
+
+/* Stats Grid */
+.stat-card {
+  padding: 20px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.25s;
+}
+.stat-card:hover { transform: translateY(-2px); }
+.stat-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.stat-card:hover::before { opacity: 1; }
+
+.stat-card-STR::before { background: radial-gradient(circle at 50% 100%, rgba(239,68,68,0.08) 0%, transparent 70%); }
+.stat-card-END::before { background: radial-gradient(circle at 50% 100%, rgba(6,182,212,0.08) 0%, transparent 70%); }
+.stat-card-AGI::before { background: radial-gradient(circle at 50% 100%, rgba(16,185,129,0.08) 0%, transparent 70%); }
+.stat-card-WIL::before { background: radial-gradient(circle at 50% 100%, rgba(139,92,246,0.08) 0%, transparent 70%); }
+
+.stat-icon-wrap {
+  width: 40px; height: 40px;
+  margin: 0 auto 10px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+}
+.stat-icon-wrap img { width: 28px; height: 28px; object-fit: contain; }
+.stat-label-key {
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  margin-bottom: 6px;
+}
+.stat-label-full {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+  letter-spacing: 0.5px;
+}
+.stat-bar-track {
+  height: 4px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+.stat-bar-fill { height: 100%; border-radius: 2px; transition: width 1.2s cubic-bezier(0.4,0,0.2,1); }
+.stat-bar-STR .stat-bar-fill { background: linear-gradient(90deg, #ef4444, #f87171); }
+.stat-bar-END .stat-bar-fill { background: linear-gradient(90deg, var(--neon-cyan), #67e8f9); }
+.stat-bar-AGI .stat-bar-fill { background: linear-gradient(90deg, var(--neon-green), #6ee7b7); }
+.stat-bar-WIL .stat-bar-fill { background: linear-gradient(90deg, var(--neon-purple), #a78bfa); }
+.stat-num {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* Streak Card */
+.streak-card {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.streak-fire {
+  font-size: 36px;
+  margin-bottom: 8px;
+  animation: fireGlow 2s ease infinite alternate;
+  display: block;
+}
+@keyframes fireGlow {
+  from { filter: drop-shadow(0 0 6px rgba(245,158,11,0.4)); }
+  to { filter: drop-shadow(0 0 18px rgba(245,158,11,0.7)); }
+}
+.streak-num {
+  font-family: var(--font-display);
+  font-size: 40px;
+  font-weight: 900;
+  color: var(--neon-gold);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.streak-label {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  letter-spacing: 2px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+.streak-mult {
+  margin-top: 10px;
+  padding: 4px 12px;
+  background: rgba(245,158,11,0.12);
+  border: 1px solid rgba(245,158,11,0.2);
+  border-radius: 20px;
+  font-family: var(--font-display);
+  font-size: 10px;
+  color: var(--neon-gold);
+  letter-spacing: 1px;
+}
+
+/* Campaign progress */
+.campaign-card { padding: 24px; }
+.campaign-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+.campaign-title {
+  font-family: var(--font-ui);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.campaign-pct {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--neon-purple);
+}
+.campaign-sub {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 14px;
+}
+.campaign-track {
+  height: 8px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 4px;
+  overflow: visible;
+  position: relative;
+  margin-bottom: 12px;
+}
+.campaign-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--neon-purple), var(--neon-pink), var(--neon-cyan));
+  border-radius: 4px;
+  position: relative;
+  transition: width 1s ease;
+}
+.campaign-fill::after {
+  content: '';
+  position: absolute;
+  right: -1px;
+  top: 50%; transform: translateY(-50%);
+  width: 14px; height: 14px;
+  background: white;
+  border-radius: 50%;
+  box-shadow: 0 0 12px var(--neon-purple);
+}
+.week-nodes {
+  display: flex;
+  gap: 4px;
+  margin-top: 12px;
+}
+.week-node {
+  flex: 1;
+  height: 24px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 8px;
+  color: var(--text-muted);
+  transition: all 0.2s;
+  cursor: pointer;
+}
+.week-node.completed { background: rgba(139,92,246,0.15); border: 1px solid rgba(139,92,246,0.3); color: var(--neon-purple); }
+.week-node.active { background: rgba(6,182,212,0.15); border: 1px solid rgba(6,182,212,0.4); color: var(--neon-cyan); box-shadow: 0 0 8px rgba(6,182,212,0.2); }
+.week-node.locked { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04); }
+.week-node:hover { filter: brightness(1.3); }
+
+
+/* ══════════════════════════════════════════════
+   CHARACTER PAGE
+══════════════════════════════════════════════ */
+.char-layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 20px;
+}
+
+.char-portrait-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.char-portrait-card {
+  padding: 32px 24px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.char-portrait-card::before {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 60%;
+  background: linear-gradient(0deg, rgba(139,92,246,0.1) 0%, transparent 100%);
+  pointer-events: none;
+}
+.char-avatar {
+  width: 140px; height: 200px;
+  object-fit: cover;
+  object-position: top;
+  margin: 0 auto 20px;
+  display: block;
+  border-radius: 16px;
+  border: 1px solid rgba(139,92,246,0.3);
+  box-shadow: 0 0 40px rgba(139,92,246,0.2), 0 20px 60px rgba(0,0,0,0.5);
+  position: relative;
+  z-index: 1;
+}
+.char-rank-display {
+  position: relative;
+  z-index: 1;
+}
+.char-rank-letter {
+  font-family: var(--font-display);
+  font-size: 64px;
+  font-weight: 900;
+  line-height: 1;
+  margin-bottom: 4px;
+  background: linear-gradient(135deg, var(--neon-purple), var(--neon-cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.char-rank-name {
+  font-family: var(--font-ui);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  color: var(--neon-green);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.char-rank-msg {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-style: italic;
+  line-height: 1.5;
+}
+
+.char-level-card {
+  padding: 20px;
+}
+.level-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+.level-num {
+  font-family: var(--font-display);
+  font-size: 36px;
+  font-weight: 900;
+  color: var(--neon-purple);
+  line-height: 1;
+}
+.level-label {
+  font-family: var(--font-display);
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--text-muted);
+}
+.next-rank-label {
+  font-family: var(--font-display);
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--text-muted);
+  text-align: right;
+}
+.next-rank-val {
+  font-family: var(--font-ui);
+  font-size: 13px;
+  color: var(--neon-gold);
+  text-align: right;
+}
+
+/* RPG Stats */
+.rpg-stats-card { padding: 28px; }
+.rpg-stats-title {
+  font-family: var(--font-display);
+  font-size: 11px;
+  letter-spacing: 3px;
+  color: var(--text-muted);
+  margin-bottom: 24px;
+  text-transform: uppercase;
+}
+.rpg-stat-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.rpg-stat-row:last-child { border-bottom: none; }
+.rpg-stat-icon {
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.rpg-stat-icon img { width: 28px; height: 28px; object-fit: contain; }
+.rpg-stat-info { flex: 1; }
+.rpg-stat-name {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.rpg-stat-key {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+.rpg-stat-full {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+.rpg-stat-val {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+}
+.rpg-stat-track {
+  height: 6px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.rpg-stat-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 1.2s cubic-bezier(0.4,0,0.2,1);
+  position: relative;
+}
+.rpg-stat-fill::after {
+  content: '';
+  position: absolute;
+  top: 0; right: 0;
+  width: 30px; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5));
+}
+
+.rpg-STR .rpg-stat-fill { background: linear-gradient(90deg, #ef4444, #fca5a5); }
+.rpg-END .rpg-stat-fill { background: linear-gradient(90deg, var(--neon-cyan), #67e8f9); }
+.rpg-AGI .rpg-stat-fill { background: linear-gradient(90deg, var(--neon-green), #6ee7b7); }
+.rpg-WIL .rpg-stat-fill { background: linear-gradient(90deg, var(--neon-purple), #c4b5fd); }
+
+.rpg-STR .rpg-stat-key, .rpg-STR .rpg-stat-val { color: #ef4444; }
+.rpg-END .rpg-stat-key, .rpg-END .rpg-stat-val { color: var(--neon-cyan); }
+.rpg-AGI .rpg-stat-key, .rpg-AGI .rpg-stat-val { color: var(--neon-green); }
+.rpg-WIL .rpg-stat-key, .rpg-WIL .rpg-stat-val { color: var(--neon-purple); }
+
+.rpg-STR .rpg-stat-icon { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2); }
+.rpg-END .rpg-stat-icon { background: rgba(6,182,212,0.1); border: 1px solid rgba(6,182,212,0.2); }
+.rpg-AGI .rpg-stat-icon { background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.2); }
+.rpg-WIL .rpg-stat-icon { background: rgba(139,92,246,0.1); border: 1px solid rgba(139,92,246,0.2); }
+
+/* Shadow army */
+.shadow-army-card { padding: 24px; }
+.shadow-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; }
+.shadow-token {
+  aspect-ratio: 1;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.shadow-token.unlocked {
+  background: rgba(139,92,246,0.08);
+  border: 1px solid rgba(139,92,246,0.25);
+}
+.shadow-token.locked {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.05);
+  opacity: 0.4;
+}
+.shadow-token:hover.unlocked { border-color: rgba(139,92,246,0.5); box-shadow: 0 0 16px rgba(139,92,246,0.15); }
+.shadow-icon { font-size: 22px; }
+.shadow-name { font-family: var(--font-display); font-size: 9px; letter-spacing: 1px; color: var(--text-secondary); }
+
+
+/* ══════════════════════════════════════════════
+   WORKOUT (QUEST) PAGE
+══════════════════════════════════════════════ */
+.workout-layout { display: grid; grid-template-columns: 260px 1fr; gap: 20px; }
+
+.day-selector { display: flex; flex-direction: column; gap: 8px; }
+.day-card {
+  padding: 14px 18px;
+  border-radius: var(--r-md);
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid transparent;
+  position: relative;
+  overflow: hidden;
+}
+.day-card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  border-radius: 0 2px 2px 0;
+  background: transparent;
+  transition: all 0.2s;
+}
+.day-card.active { background: rgba(139,92,246,0.08); border-color: rgba(139,92,246,0.2); }
+.day-card.active::before { background: var(--neon-purple); }
+.day-card:hover:not(.active) { background: var(--glass-bg); border-color: rgba(255,255,255,0.06); }
+.day-card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+.day-name { font-family: var(--font-ui); font-size: 14px; font-weight: 600; color: var(--text-primary); }
+.day-badge {
+  width: 20px; height: 20px;
+  border-radius: 4px;
+  font-size: 10px;
+  display: flex; align-items: center; justify-content: center;
+}
+.day-badge.done { background: rgba(52,211,153,0.15); color: var(--neon-green); }
+.day-badge.partial { background: rgba(245,158,11,0.15); color: var(--neon-gold); }
+.day-focus { font-size: 11px; color: var(--text-muted); line-height: 1.3; }
+.day-ex-count {
+  font-family: var(--font-display);
+  font-size: 9px;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  margin-top: 6px;
+}
+
+/* Exercise Detail Panel */
+.workout-main { display: flex; flex-direction: column; gap: 16px; }
+
+.quest-header-card {
+  padding: 24px 28px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  position: relative;
+  overflow: hidden;
+}
+.quest-header-card::before {
+  content: '';
+  position: absolute;
+  top: 0; right: 0;
+  width: 300px; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(6,182,212,0.04));
+  pointer-events: none;
+}
+.quest-day-icon {
+  width: 56px; height: 56px;
+  background: rgba(6,182,212,0.1);
+  border: 1px solid rgba(6,182,212,0.25);
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px;
+  flex-shrink: 0;
+}
+.quest-info { flex: 1; }
+.quest-day-title { font-family: var(--font-display); font-size: 18px; font-weight: 700; letter-spacing: 1px; margin-bottom: 4px; }
+.quest-day-focus { font-size: 13px; color: var(--text-muted); }
+.quest-meta { display: flex; gap: 12px; margin-top: 10px; }
+.quest-badge {
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-family: var(--font-display);
+  font-size: 9px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.quest-badge-xp { background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.2); color: var(--neon-gold); }
+.quest-badge-diff { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2); color: var(--neon-red); }
+.quest-badge-ex { background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.2); color: var(--neon-blue); }
+
+.start-quest-btn {
+  padding: 12px 24px;
+  background: linear-gradient(135deg, var(--neon-purple), var(--neon-blue));
+  border: none;
+  border-radius: 12px;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+.start-quest-btn:hover { transform: scale(1.03); box-shadow: 0 0 24px rgba(139,92,246,0.4); }
+
+.exercise-cards { display: flex; flex-direction: column; gap: 12px; }
+.exercise-card {
+  padding: 20px;
+  transition: all 0.25s;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+.exercise-card:hover { transform: translateX(4px); border-color: rgba(139,92,246,0.2); }
+.exercise-card.done-card { border-color: rgba(52,211,153,0.2); }
+.exercise-card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: var(--glass-border);
+  transition: all 0.2s;
+}
+.exercise-card:hover::before { background: var(--neon-purple); }
+.exercise-card.done-card::before { background: var(--neon-green); }
+
+.ex-card-top {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+.ex-card-gif {
+  width: 48px; height: 48px;
+  border-radius: 10px;
+  object-fit: cover;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  flex-shrink: 0;
+}
+.ex-card-info { flex: 1; }
+.ex-card-name { font-family: var(--font-ui); font-size: 16px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
+.ex-card-meta { display: flex; gap: 8px; }
+.ex-tag {
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-family: var(--font-display);
+  font-size: 9px;
+  letter-spacing: 1px;
+}
+.ex-tag-muscle { background: rgba(139,92,246,0.1); color: #a78bfa; border: 1px solid rgba(139,92,246,0.15); }
+.ex-tag-sets { background: rgba(6,182,212,0.1); color: var(--neon-cyan); border: 1px solid rgba(6,182,212,0.15); }
+.ex-tag-cardio { background: rgba(16,185,129,0.1); color: var(--neon-green); border: 1px solid rgba(16,185,129,0.15); }
+
+.ex-complete-btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+.ex-complete-btn.todo {
+  background: rgba(139,92,246,0.1);
+  border: 1px solid rgba(139,92,246,0.25);
+  color: var(--neon-purple);
+}
+.ex-complete-btn.done {
+  background: rgba(52,211,153,0.1);
+  border: 1px solid rgba(52,211,153,0.25);
+  color: var(--neon-green);
+}
+.ex-complete-btn:hover { transform: scale(1.05); }
+
+/* Weight logging */
+.weight-logger {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255,255,255,0.04);
+}
+.set-log {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 8px;
+  padding: 8px;
+  text-align: center;
+}
+.set-log-label {
+  font-family: var(--font-display);
+  font-size: 8px;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+.set-log-input {
+  width: 100%;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 6px;
+  padding: 6px;
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  font-size: 14px;
+  text-align: center;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.set-log-input:focus { border-color: rgba(139,92,246,0.4); }
+.set-log-unit {
+  font-size: 9px;
+  color: var(--text-muted);
+  margin-top: 3px;
+}
+
+/* Form Tips */
+.form-tips {
+  margin-top: 12px;
+  padding: 14px;
+  background: rgba(6,182,212,0.04);
+  border: 1px solid rgba(6,182,212,0.1);
+  border-radius: 10px;
+}
+.form-tip-title {
+  font-family: var(--font-display);
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--neon-cyan);
+  margin-bottom: 8px;
+}
+.form-cues { display: flex; flex-direction: column; gap: 4px; }
+.form-cue {
+  font-size: 12px;
+  color: var(--text-secondary);
+  padding-left: 12px;
+  position: relative;
+  line-height: 1.4;
+}
+.form-cue::before {
+  content: '▸';
+  position: absolute;
+  left: 0;
+  color: var(--neon-cyan);
+  font-size: 8px;
+  top: 3px;
+}
+
+/* ══════════════════════════════════════════════
+   NUTRITION PAGE
+══════════════════════════════════════════════ */
+.nutrition-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+.macro-ring-card {
+  padding: 28px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  grid-column: 1 / -1;
+}
+.macro-rings {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  flex-shrink: 0;
+}
+.macro-rings svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.ring-bg { fill: none; stroke: rgba(255,255,255,0.05); }
+.ring-protein { fill: none; stroke: #ef4444; stroke-linecap: round; transition: stroke-dashoffset 1s ease; }
+.ring-carbs { fill: none; stroke: var(--neon-gold); stroke-linecap: round; transition: stroke-dashoffset 1s ease; }
+.ring-fat { fill: none; stroke: var(--neon-cyan); stroke-linecap: round; transition: stroke-dashoffset 1s ease; }
+.ring-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.ring-cal { font-family: var(--font-display); font-size: 18px; font-weight: 700; color: var(--text-primary); line-height: 1; }
+.ring-cal-label { font-family: var(--font-display); font-size: 7px; letter-spacing: 1px; color: var(--text-muted); }
+
+.macro-legend { flex: 1; }
+.macro-legend-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+.macro-legend-row:last-child { border-bottom: none; }
+.macro-legend-name { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-secondary); }
+.macro-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+.macro-legend-val { font-family: var(--font-display); font-size: 14px; font-weight: 600; }
+
+.meal-card { padding: 24px; }
+.meal-time {
+  font-family: var(--font-display);
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--neon-gold);
+  margin-bottom: 12px;
+  text-transform: uppercase;
+}
+.meal-items { display: flex; flex-direction: column; gap: 8px; }
+.meal-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  background: rgba(255,255,255,0.02);
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.04);
+}
+.meal-item-name { font-size: 13px; color: var(--text-secondary); }
+.meal-item-cal {
+  font-family: var(--font-display);
+  font-size: 12px;
+  color: var(--neon-gold);
+}
+
+/* ══════════════════════════════════════════════
+   DUNGEON MAP PAGE
+══════════════════════════════════════════════ */
+.map-header { text-align: center; padding: 32px; margin-bottom: 24px; position: relative; overflow: hidden; }
+.map-header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 100%, rgba(139,92,246,0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+.map-title { font-family: var(--font-display); font-size: 28px; font-weight: 900; letter-spacing: 4px; margin-bottom: 8px; }
+.map-subtitle { font-size: 14px; color: var(--text-muted); }
+
+.dungeon-map {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 24px;
+  position: relative;
+}
+
+/* Map connector line */
+.dungeon-map::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 0; bottom: 0;
+  width: 2px;
+  background: linear-gradient(180deg, transparent, rgba(139,92,246,0.3) 10%, rgba(139,92,246,0.3) 90%, transparent);
+  transform: translateX(-50%);
+  z-index: 0;
+}
+
+.map-phase {
+  position: relative;
+  z-index: 1;
+  margin-bottom: 32px;
+}
+.map-phase-label {
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  background: var(--bg-void);
+  display: inline-block;
+  padding: 0 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  position: relative;
+}
+
+.map-weeks-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+.map-node {
+  padding: 20px;
+  border-radius: var(--r-lg);
+  border: 1px solid rgba(255,255,255,0.06);
+  cursor: pointer;
+  transition: all 0.25s;
+  position: relative;
+  overflow: hidden;
+}
+.map-node::before {
+  content: '';
+  position: absolute;
+  top: -60px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px; height: 120px;
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.map-node:hover::before { opacity: 1; }
+
+.map-node.completed {
+  background: rgba(139,92,246,0.06);
+  border-color: rgba(139,92,246,0.2);
+}
+.map-node.completed::before { background: radial-gradient(circle, rgba(139,92,246,0.15) 0%, transparent 70%); }
+.map-node.active {
+  background: rgba(6,182,212,0.06);
+  border-color: rgba(6,182,212,0.3);
+  box-shadow: 0 0 20px rgba(6,182,212,0.08), inset 0 0 20px rgba(6,182,212,0.03);
+}
+.map-node.active::before { background: radial-gradient(circle, rgba(6,182,212,0.15) 0%, transparent 70%); }
+.map-node.locked { opacity: 0.3; cursor: not-allowed; }
+.map-node:hover:not(.locked) { transform: translateY(-3px); }
+
+.map-node-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+.map-node-week {
+  font-family: var(--font-display);
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: var(--text-muted);
+}
+.map-node-status {
+  width: 28px; height: 28px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px;
+}
+.map-node.completed .map-node-status { background: rgba(139,92,246,0.15); color: var(--neon-purple); }
+.map-node.active .map-node-status { background: rgba(6,182,212,0.15); color: var(--neon-cyan); animation: activeGlow 2s ease infinite alternate; }
+.map-node.locked .map-node-status { background: rgba(255,255,255,0.04); color: var(--text-muted); }
+@keyframes activeGlow { from { box-shadow: 0 0 8px rgba(6,182,212,0.3); } to { box-shadow: 0 0 20px rgba(6,182,212,0.6); } }
+
+.map-node-phase {
+  font-family: var(--font-ui);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+.map-node-tip { font-size: 12px; color: var(--text-muted); line-height: 1.4; }
+
+.map-node-progress { margin-top: 14px; }
+.map-node-bar-track { height: 3px; background: rgba(255,255,255,0.05); border-radius: 2px; overflow: hidden; }
+.map-node.completed .map-node-bar-fill { width: 100%; background: linear-gradient(90deg, var(--neon-purple), var(--neon-pink)); }
+.map-node.active .map-node-bar-fill { background: linear-gradient(90deg, var(--neon-cyan), var(--neon-blue)); }
+.map-node.locked .map-node-bar-fill { width: 0%; background: rgba(255,255,255,0.1); }
+.map-node-bar-fill { height: 100%; border-radius: 2px; transition: width 1s ease; }
+
+/* ══════════════════════════════════════════════
+   MUSCLE MAP PAGE
+══════════════════════════════════════════════ */
+.muscle-layout { display: grid; grid-template-columns: 1fr 320px; gap: 20px; }
+.muscle-map-card { padding: 28px; }
+.muscle-svg-wrap {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  padding: 20px 0;
+}
+.body-view { text-align: center; }
+.body-view-label { font-family: var(--font-display); font-size: 9px; letter-spacing: 2px; color: var(--text-muted); margin-top: 10px; }
+
+/* SVG muscle body styles */
+.muscle-group {
+  fill: rgba(139,92,246,0.08);
+  stroke: rgba(139,92,246,0.2);
+  stroke-width: 1;
+  cursor: pointer;
+  transition: all 0.25s;
+}
+.muscle-group:hover { fill: rgba(139,92,246,0.25); stroke: rgba(139,92,246,0.6); }
+.muscle-group.active { fill: rgba(6,182,212,0.35); stroke: rgba(6,182,212,0.8); filter: drop-shadow(0 0 6px rgba(6,182,212,0.5)); }
+.muscle-group.secondary { fill: rgba(139,92,246,0.2); stroke: rgba(139,92,246,0.5); filter: drop-shadow(0 0 4px rgba(139,92,246,0.3)); }
+.muscle-skeleton { fill: rgba(255,255,255,0.03); stroke: rgba(255,255,255,0.06); stroke-width: 1; }
+
+.muscle-info-card { display: flex; flex-direction: column; gap: 14px; }
+.muscle-select-hint {
+  padding: 24px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-muted);
+  font-style: italic;
+}
+.muscle-detail-card { padding: 22px; }
+.muscle-detail-name {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--neon-cyan);
+  margin-bottom: 16px;
+}
+.muscle-exercises { display: flex; flex-direction: column; gap: 8px; }
+.muscle-ex-row {
+  padding: 12px 14px;
+  background: rgba(6,182,212,0.04);
+  border: 1px solid rgba(6,182,212,0.1);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.muscle-ex-row:hover { background: rgba(6,182,212,0.08); border-color: rgba(6,182,212,0.2); }
+.muscle-ex-name { font-family: var(--font-ui); font-size: 14px; font-weight: 500; }
+.muscle-ex-sets { font-family: var(--font-display); font-size: 10px; color: var(--neon-cyan); }
+
+/* ══════════════════════════════════════════════
+   WARMUP PAGE
+══════════════════════════════════════════════ */
+.warmup-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.warmup-cats { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
+.warmup-cat-btn {
+  padding: 8px 18px;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.03);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.warmup-cat-btn:hover { border-color: rgba(255,255,255,0.15); color: var(--text-secondary); }
+.warmup-cat-btn.active { background: rgba(139,92,246,0.1); border-color: rgba(139,92,246,0.3); color: var(--neon-purple); }
+
+.warmup-exercise-cards { display: flex; flex-direction: column; gap: 12px; }
+.warmup-ex-card {
+  padding: 18px;
+  border-radius: var(--r-md);
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
+  transition: all 0.2s;
+}
+.warmup-ex-card:hover { border-color: rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); }
+.warmup-ex-num {
+  width: 28px; height: 28px;
+  border-radius: 8px;
+  background: rgba(139,92,246,0.1);
+  border: 1px solid rgba(139,92,246,0.2);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display);
+  font-size: 12px;
+  color: var(--neon-purple);
+  flex-shrink: 0;
+}
+.warmup-ex-name { font-family: var(--font-ui); font-size: 15px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
+.warmup-ex-sets { font-family: var(--font-display); font-size: 10px; color: var(--neon-cyan); margin-bottom: 6px; letter-spacing: 1px; }
+.warmup-ex-tip { font-size: 12px; color: var(--text-muted); line-height: 1.4; }
+
+/* ══════════════════════════════════════════════
+   HIIT PAGE
+══════════════════════════════════════════════ */
+.hiit-programs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+.hiit-program-card {
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.25s;
+  position: relative;
+  overflow: hidden;
+}
+.hiit-program-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 0%, var(--card-color, rgba(139,92,246,0.08)) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.hiit-program-card:hover::before { opacity: 1; }
+.hiit-program-card.active { border-color: var(--card-border, rgba(139,92,246,0.4)); }
+.hiit-program-icon { font-size: 28px; margin-bottom: 10px; display: block; }
+.hiit-program-name { font-family: var(--font-ui); font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+.hiit-program-tagline { font-size: 11px; color: var(--text-muted); margin-bottom: 12px; }
+.hiit-program-stats { display: flex; gap: 8px; flex-wrap: wrap; }
+.hiit-stat-chip {
+  padding: 3px 8px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 4px;
+  font-family: var(--font-display);
+  font-size: 9px;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+}
+
+.hiit-timer-card {
+  padding: 40px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.hiit-timer-ring {
+  width: 160px;
+  height: 160px;
+  margin: 0 auto 20px;
+  position: relative;
+}
+.hiit-timer-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.timer-ring-bg { fill: none; stroke: rgba(255,255,255,0.05); stroke-width: 8; }
+.timer-ring-progress { fill: none; stroke-width: 8; stroke-linecap: round; transition: stroke-dashoffset 0.5s linear; }
+.timer-display {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.timer-secs {
+  font-family: var(--font-display);
+  font-size: 40px;
+  font-weight: 900;
+  color: var(--text-primary);
+  line-height: 1;
+}
+.timer-phase {
+  font-family: var(--font-display);
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+.hiit-current-ex {
+  font-family: var(--font-ui);
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+.hiit-round-info { font-family: var(--font-display); font-size: 11px; letter-spacing: 2px; color: var(--text-muted); margin-bottom: 24px; }
+.hiit-controls { display: flex; gap: 12px; justify-content: center; }
+.hiit-btn {
+  padding: 12px 24px;
+  border-radius: 10px;
+  border: none;
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+}
+.hiit-btn-start { background: linear-gradient(135deg, var(--neon-purple), var(--neon-blue)); color: white; }
+.hiit-btn-stop { background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3); color: var(--neon-red); }
+.hiit-btn:hover { transform: scale(1.04); }
+
+/* ══════════════════════════════════════════════
+   LEVEL UP OVERLAY
+══════════════════════════════════════════════ */
+.levelup-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.85);
+  backdrop-filter: blur(20px);
+}
+.levelup-overlay.show { display: flex; animation: overlayIn 0.3s ease; }
+@keyframes overlayIn { from { opacity: 0; } to { opacity: 1; } }
+
+.levelup-card {
+  padding: 60px;
+  text-align: center;
+  max-width: 500px;
+  position: relative;
+  background: rgba(139,92,246,0.06);
+  border: 1px solid rgba(139,92,246,0.3);
+  border-radius: 28px;
+  animation: levelupIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes levelupIn { from { opacity: 0; transform: scale(0.7); } to { opacity: 1; transform: scale(1); } }
+.levelup-glow {
+  position: absolute;
+  inset: -40px;
+  background: radial-gradient(circle, rgba(139,92,246,0.15) 0%, transparent 70%);
+  pointer-events: none;
+  animation: glowPulse 2s ease infinite alternate;
+}
+@keyframes glowPulse { from { opacity: 0.5; } to { opacity: 1; } }
+.levelup-system {
+  font-family: var(--font-display);
+  font-size: 10px;
+  letter-spacing: 4px;
+  color: var(--neon-cyan);
+  margin-bottom: 20px;
+}
+.levelup-title {
+  font-family: var(--font-display);
+  font-size: 48px;
+  font-weight: 900;
+  letter-spacing: 4px;
+  background: linear-gradient(135deg, var(--neon-purple), var(--neon-cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+  line-height: 1;
+  animation: titleFlash 0.5s ease 0.3s both;
+}
+@keyframes titleFlash { from { filter: brightness(0); } to { filter: brightness(1); } }
+.levelup-sub { font-size: 16px; color: var(--text-secondary); margin-bottom: 32px; }
+.levelup-boosts { display: flex; justify-content: center; gap: 16px; margin-bottom: 32px; }
+.levelup-boost {
+  padding: 8px 16px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px;
+  font-family: var(--font-display);
+  font-size: 11px;
+  color: var(--neon-gold);
+  animation: boostSlide 0.4s ease both;
+}
+.levelup-boost:nth-child(2) { animation-delay: 0.1s; }
+.levelup-boost:nth-child(3) { animation-delay: 0.2s; }
+@keyframes boostSlide { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+.levelup-close-btn {
+  padding: 12px 32px;
+  background: linear-gradient(135deg, var(--neon-purple), var(--neon-blue));
+  border: none;
+  border-radius: 12px;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.levelup-close-btn:hover { box-shadow: 0 0 24px rgba(139,92,246,0.4); }
+
+/* ══════════════════════════════════════════════
+   XP POP NOTIFICATION
+══════════════════════════════════════════════ */
+.xp-pop {
+  position: fixed;
+  top: 80px;
+  right: 24px;
+  z-index: 500;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.xp-toast {
+  padding: 10px 18px;
+  border-radius: 10px;
+  background: rgba(245,158,11,0.12);
+  border: 1px solid rgba(245,158,11,0.3);
+  font-family: var(--font-display);
+  font-size: 13px;
+  color: var(--neon-gold);
+  animation: toastIn 0.3s ease, toastOut 0.3s ease 2.2s both;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+@keyframes toastIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes toastOut { to { opacity: 0; transform: translateX(20px); } }
+
+/* ── BUTTONS ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: none;
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-primary { background: linear-gradient(135deg, var(--neon-purple), var(--neon-blue)); color: white; }
+.btn-primary:hover { box-shadow: 0 0 20px rgba(139,92,246,0.35); transform: translateY(-1px); }
+.btn-ghost { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); color: var(--text-secondary); }
+.btn-ghost:hover { background: rgba(255,255,255,0.08); color: var(--text-primary); }
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(139,92,246,0.3); border-radius: 2px; }
+
+/* ── WEEK SELECTOR ── */
+.week-selector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  margin-bottom: 20px;
+  overflow-x: auto;
+}
+.week-sel-btn {
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: none;
+  background: none;
+  font-family: var(--font-display);
+  font-size: 10px;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.week-sel-btn:hover { color: var(--text-secondary); background: rgba(255,255,255,0.04); }
+.week-sel-btn.active { background: rgba(139,92,246,0.12); color: var(--neon-purple); border: 1px solid rgba(139,92,246,0.2); }
+
+/* Unit toggle */
+.unit-toggle {
+  display: flex;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.unit-btn {
+  padding: 6px 14px;
+  border: none;
+  background: none;
+  font-family: var(--font-display);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.unit-btn.active { background: rgba(139,92,246,0.15); color: var(--neon-purple); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  .home-grid { grid-template-columns: 1fr; }
+  .hunter-hero { grid-column: 1; grid-row: auto; }
+  .quest-today { grid-column: 1; }
+  .char-layout { grid-template-columns: 1fr; }
+  .workout-layout { grid-template-columns: 1fr; }
+  .muscle-layout { grid-template-columns: 1fr; }
+  .hiit-programs { grid-template-columns: 1fr 1fr; }
+  .nutrition-layout { grid-template-columns: 1fr; }
+  .map-weeks-row { grid-template-columns: 1fr; }
+}
+
+/* Page top bar */
+.page-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  gap: 16px;
+}
+.page-heading {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--text-primary);
+}
+.page-heading span { color: var(--neon-purple); }
+
+</style>
 </head>
 <body>
 
-<!-- ═══ SYSTEM BOOT OVERLAY (onboarding) ═══ -->
-<div id="boot-screen" class="boot-screen">
-  <div class="boot-lines" id="boot-lines"></div>
-  <div class="boot-center" id="boot-center" style="display:none">
-    <div class="boot-eye">
-      <div class="boot-eye-ring boot-eye-ring-1"></div>
-      <div class="boot-eye-ring boot-eye-ring-2"></div>
-      <div class="boot-eye-core"></div>
+<!-- Background -->
+<div class="bg-ambient">
+  <div class="bg-orb bg-orb-1"></div>
+  <div class="bg-orb bg-orb-2"></div>
+  <div class="bg-orb bg-orb-3"></div>
+</div>
+
+<!-- TOP NAV -->
+<nav class="top-nav">
+  <a class="nav-logo" href="#">
+    <div class="nav-logo-icon">⚔</div>
+    HUNTER'S SYSTEM
+  </a>
+
+  <div class="nav-tabs">
+    <button class="nav-tab active" data-page="home">HOME</button>
+    <button class="nav-tab" data-page="character">CHARACTER</button>
+    <button class="nav-tab" data-page="workout">QUESTS</button>
+    <button class="nav-tab" data-page="nutrition">NUTRITION</button>
+    <button class="nav-tab" data-page="warmup">WARMUP</button>
+    <button class="nav-tab" data-page="hiit">HIIT</button>
+    <button class="nav-tab" data-page="dungeonmap">MAP</button>
+    <button class="nav-tab" data-page="musclemap">ANATOMY</button>
+  </div>
+
+  <div class="nav-right">
+    <div id="navRankBadge" class="nav-rank-badge" title="Your Rank">D</div>
+    <div class="unit-toggle">
+      <button class="unit-btn active" id="unitKg" onclick="setUnit('kg')">KG</button>
+      <button class="unit-btn" id="unitLbs" onclick="setUnit('lbs')">LBS</button>
     </div>
-    <div class="boot-system-title">◈ THE SYSTEM ◈</div>
-    <div class="boot-message" id="boot-message">A new hunter has been detected.</div>
-    <div class="boot-name-prompt" id="boot-name-prompt" style="display:none">
-      <div class="boot-prompt-line">ENTER DESIGNATION:</div>
-      <input class="boot-name-inp" id="boot-name-inp" type="text" maxlength="20"
-        placeholder="YOUR NAME" autocomplete="off" autocorrect="off"
-        onkeydown="if(event.key==='Enter')bootConfirm()">
-      <button class="boot-confirm-btn" onclick="bootConfirm()">
-        <span>ARISE</span>
-        <div class="boot-btn-glow"></div>
-      </button>
-    </div>
+  </div>
+</nav>
+
+<!-- XP Pop notifications -->
+<div class="xp-pop" id="xpPop"></div>
+
+<!-- LEVEL UP OVERLAY -->
+<div class="levelup-overlay" id="levelupOverlay">
+  <div class="levelup-card glass glass-purple">
+    <div class="levelup-glow"></div>
+    <div class="levelup-system">— SYSTEM NOTIFICATION —</div>
+    <div class="levelup-title" id="levelupTitle">LEVEL UP</div>
+    <div class="levelup-sub" id="levelupSub">You have grown stronger, Hunter.</div>
+    <div class="levelup-boosts" id="levelupBoosts"></div>
+    <button class="levelup-close-btn" onclick="closeLevelup()">ACKNOWLEDGED</button>
   </div>
 </div>
 
-<!-- ═══ RANK-UP CEREMONY ═══ -->
-<div id="rankup-overlay" class="rankup-overlay">
-  <div class="rankup-content">
-    <div class="rankup-particles" id="rankup-particles"></div>
-    <div class="rankup-symbol" id="rankup-symbol">◈</div>
-    <div class="rankup-eyeline">THE SYSTEM SPEAKS</div>
-    <div class="rankup-new-rank" id="rankup-new-rank">C-RANK</div>
-    <div class="rankup-msg" id="rankup-msg">Your power has grown.</div>
-    <button class="rankup-ack" onclick="closeRankUp()">ACKNOWLEDGE</button>
-  </div>
-</div>
+<!-- APP SHELL -->
+<div class="app-shell">
 
-<!-- ═══ SIDE PANEL (drawer) ═══ -->
-<div class="panel-overlay" id="panel-overlay" onclick="closePanel()"></div>
-<aside class="side-panel" id="side-panel">
-  <div class="panel-header">
-    <div class="panel-logo">HUNTER'S<br><span>SYSTEM</span></div>
-    <button class="panel-close" onclick="closePanel()">✕</button>
-  </div>
-  <div class="panel-hunter" id="panel-hunter">
-    <div class="panel-rank-badge" id="panel-rank-badge">E</div>
-    <div class="panel-hunter-info">
-      <div class="panel-hunter-name" id="panel-hunter-name">HUNTER</div>
-      <div class="panel-hunter-streak">🔥 <span id="drawer-streak-num">0</span> DAY STREAK</div>
-    </div>
-  </div>
-  <nav class="panel-nav">
-    <button class="pnav-btn active" id="dnav-home" onclick="showPage('home');closePanel()">
-      <span class="pnav-icon">⚔</span><span class="pnav-label">Dashboard</span>
-    </button>
-    <button class="pnav-btn" id="dnav-character" onclick="showPage('character');closePanel()">
-      <span class="pnav-icon">◈</span><span class="pnav-label">Character</span>
-    </button>
-    <button class="pnav-btn" id="dnav-nutr" onclick="showPage('nutr');closePanel()">
-      <span class="pnav-icon">⬡</span><span class="pnav-label">Nutrition</span>
-    </button>
-    <button class="pnav-btn" id="dnav-warmup" onclick="showPage('warmup');closePanel()">
-      <span class="pnav-icon">▲</span><span class="pnav-label">Warmup</span>
-    </button>
-    <button class="pnav-btn" id="dnav-hiit" onclick="showPage('hiit');closePanel()">
-      <span class="pnav-icon">⚡</span><span class="pnav-label">HIIT</span>
-    </button>
-    <button class="pnav-btn" id="dnav-vol" onclick="showPage('vol');closePanel()">
-      <span class="pnav-icon">◉</span><span class="pnav-label">Volume</span>
-    </button>
-    <button class="pnav-btn" id="dnav-cal" onclick="showPage('cal');closePanel()">
-      <span class="pnav-icon">▦</span><span class="pnav-label">Calendar</span>
-    </button>
-    <button class="pnav-btn" id="dnav-goals" onclick="showPage('goals');closePanel()">
-      <span class="pnav-icon">◆</span><span class="pnav-label">Quests</span>
-    </button>
-    <button class="pnav-btn" id="dnav-pr" onclick="showPage('pr');closePanel()">
-      <span class="pnav-icon">★</span><span class="pnav-label">Records</span>
-    </button>
-    <button class="pnav-btn" id="dnav-bmi" onclick="showPage('bmi');closePanel()">
-      <span class="pnav-icon">⬟</span><span class="pnav-label">BMI</span>
-    </button>
-    <button class="pnav-btn" id="dnav-customize" onclick="showPage('customize');closePanel()">
-      <span class="pnav-icon">⚙</span><span class="pnav-label">Customize</span>
-    </button>
-    <button class="pnav-btn" id="dnav-week" style="display:none" onclick="showPage('week');closePanel()">
-      <span class="pnav-icon">▣</span><span class="pnav-label">Dungeon</span>
-    </button>
-  </nav>
-  <div class="panel-footer">
-    <button class="panel-theme-btn" onclick="toggleTheme()" id="theme-btn-drawer">◐ Toggle Mode</button>
-  </div>
-</aside>
+  <!-- ══════════ HOME PAGE ══════════ -->
+  <div class="page active" id="page-home">
+    <div class="home-grid">
 
-<!-- ═══ TOP BAR ═══ -->
-<header class="topbar" id="topbar">
-  <button class="topbar-menu" onclick="openPanel()">☰</button>
-  <div class="topbar-brand">
-    <span class="topbar-diamond">◈</span>
-    <span class="topbar-title">HUNTER'S SYSTEM</span>
-  </div>
-  <nav class="topbar-nav" id="topbar-nav">
-    <button class="tnav active" id="nav-home" onclick="showPage('home')">Home</button>
-    <button class="tnav" id="nav-character" onclick="showPage('character')">Character</button>
-    <button class="tnav" id="nav-nutr" onclick="showPage('nutr')">Nutrition</button>
-    <button class="tnav" id="nav-warmup" onclick="showPage('warmup')">Warmup</button>
-    <button class="tnav" id="nav-hiit" onclick="showPage('hiit')">HIIT</button>
-    <button class="tnav" id="nav-vol" onclick="showPage('vol')">Volume</button>
-    <button class="tnav tnav-hidden" id="nav-week"></button>
-    <button class="tnav tnav-hidden" id="nav-cal"></button>
-    <button class="tnav tnav-hidden" id="nav-goals"></button>
-    <button class="tnav tnav-hidden" id="nav-pr"></button>
-    <button class="tnav tnav-hidden" id="nav-bmi"></button>
-    <button class="tnav tnav-hidden" id="nav-customize"></button>
-  </nav>
-  <div class="topbar-right">
-    <div class="topbar-rank" id="topbar-rank">E</div>
-    <div class="topbar-streak">🔥<span id="streak-num">0</span></div>
-    <button class="topbar-theme" onclick="toggleTheme()" id="theme-btn">◐</button>
-  </div>
-</header>
-
-<!-- ════════════════════════════════════════
-     PAGE: HOME / DASHBOARD
-════════════════════════════════════════ -->
-<div id="page-home" class="page active">
-
-  <!-- QUEST ALERT BANNER -->
-  <div id="today-banner-wrap"></div>
-
-  <!-- HUNTER IDENTITY PANEL -->
-  <section class="identity-panel">
-    <div class="id-panel-bg" id="id-panel-bg"></div>
-    <div class="id-panel-scan"></div>
-    <div class="id-panel-inner">
-      <div class="id-header">
-        <div class="id-system-tag">◈ SYSTEM INTERFACE ◈</div>
-        <div class="id-status-dot"></div>
-      </div>
-      <div class="id-body">
-        <div class="id-portrait-col">
-          <div class="id-portrait-frame" id="id-portrait-frame">
-            <img class="id-portrait" id="id-portrait" src="" alt="">
-            <div class="id-portrait-scanline"></div>
-            <div class="id-rank-stamp" id="id-rank-stamp">E</div>
-          </div>
-        </div>
-        <div class="id-info-col">
-          <div class="id-name" id="id-name">HUNTER</div>
-          <div class="id-rank-full" id="id-rank-full">E-RANK HUNTER</div>
-          <div class="id-rank-msg" id="id-rank-msg">The journey begins.</div>
-          <div class="id-xp-section">
-            <div class="id-xp-row">
-              <span class="id-xp-label">HUNTER XP</span>
-              <span class="id-xp-nums" id="id-xp-nums">0 / 100</span>
-            </div>
-            <div class="id-xp-bar">
-              <div class="id-xp-fill" id="id-xp-fill" style="width:0%"></div>
-              <div class="id-xp-pulse" id="id-xp-pulse"></div>
+      <!-- Hunter Hero -->
+      <div class="glass glass-purple hunter-hero">
+        <div class="hunter-hero-inner">
+          <div class="system-interface-tag">SYSTEM INTERFACE</div>
+          <div class="hunter-portrait">
+            <img class="portrait-img" id="heroPortrait" src="" alt="Hunter">
+            <div class="hunter-info">
+              <div class="hunter-name">RASHMEET SINGH</div>
+              <div class="hunter-rank-label" id="heroRankLabel">D-RANK HUNTER</div>
+              <div class="hunter-rank-msg" id="heroRankMsg">You have shown your will. The gates open.</div>
             </div>
           </div>
-          <div class="id-quick-stats">
-            <div class="id-qstat"><span class="id-qstat-v" id="id-qs-weeks">0</span><span class="id-qstat-l">WEEKS</span></div>
-            <div class="id-qstat-div"></div>
-            <div class="id-qstat"><span class="id-qstat-v" id="id-qs-ex">0</span><span class="id-qstat-l">EXERCISES</span></div>
-            <div class="id-qstat-div"></div>
-            <div class="id-qstat"><span class="id-qstat-v" id="id-qs-pct">0%</span><span class="id-qstat-l">COMPLETE</span></div>
+          <div class="xp-section">
+            <div class="xp-label-row">
+              <div class="xp-label">HUNTER XP</div>
+              <div class="xp-value" id="heroXpVal">0 / 150 XP</div>
+            </div>
+            <div class="xp-bar-track">
+              <div class="xp-bar-fill" id="heroXpBar" style="width:0%"></div>
+            </div>
+            <div class="hunter-stats-row">
+              <div class="mini-stat">
+                <div class="mini-stat-val" id="heroWeeks">0</div>
+                <div class="mini-stat-key">WEEKS</div>
+              </div>
+              <div class="mini-stat">
+                <div class="mini-stat-val" id="heroExercises">0</div>
+                <div class="mini-stat-key">EXERCISES</div>
+              </div>
+              <div class="mini-stat">
+                <div class="mini-stat-val" id="heroQuests">0</div>
+                <div class="mini-stat-key">QUESTS</div>
+              </div>
+              <div class="mini-stat">
+                <div class="mini-stat-val" id="heroPct">0%</div>
+                <div class="mini-stat-key">COMPLETE</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Today's Quest -->
+      <div class="glass quest-today">
+        <div class="quest-header">
+          <div class="quest-title-block">
+            <div class="quest-title" id="todayTitle">TODAY'S QUEST</div>
+            <div class="quest-subtitle" id="todaySubtitle">Loading...</div>
+          </div>
+          <div class="quest-xp-badge" id="todayXpBadge">⚡ +0 XP</div>
+        </div>
+        <div class="exercise-list" id="todayExerciseList">
+          <!-- Filled by JS -->
+        </div>
+      </div>
+
+      <!-- STATS CARDS -->
+      <div class="glass stat-card stat-card-STR" onclick="showPage('character')">
+        <div class="stat-icon-wrap" id="strIconWrap">
+          <img id="strIcon" src="" alt="STR">
+        </div>
+        <div class="stat-label-key" style="color:#ef4444">STR</div>
+        <div class="stat-label-full">STRENGTH</div>
+        <div class="stat-bar-track stat-bar-STR">
+          <div class="stat-bar-fill" id="statBarSTR" style="width:0%"></div>
+        </div>
+        <div class="stat-num" id="statNumSTR" style="color:#ef4444">0</div>
+      </div>
+
+      <div class="glass stat-card stat-card-END" onclick="showPage('character')">
+        <div class="stat-icon-wrap" id="endIconWrap">
+          <img id="endIcon" src="" alt="END">
+        </div>
+        <div class="stat-label-key" style="color:var(--neon-cyan)">END</div>
+        <div class="stat-label-full">ENDURANCE</div>
+        <div class="stat-bar-track stat-bar-END">
+          <div class="stat-bar-fill" id="statBarEND" style="width:0%"></div>
+        </div>
+        <div class="stat-num" id="statNumEND" style="color:var(--neon-cyan)">0</div>
+      </div>
+
+      <div class="glass stat-card stat-card-AGI" onclick="showPage('character')">
+        <div class="stat-icon-wrap" id="agiIconWrap">
+          <img id="agiIcon" src="" alt="AGI">
+        </div>
+        <div class="stat-label-key" style="color:var(--neon-green)">AGI</div>
+        <div class="stat-label-full">AGILITY</div>
+        <div class="stat-bar-track stat-bar-AGI">
+          <div class="stat-bar-fill" id="statBarAGI" style="width:0%"></div>
+        </div>
+        <div class="stat-num" id="statNumAGI" style="color:var(--neon-green)">0</div>
+      </div>
+
+      <div class="glass stat-card stat-card-WIL" onclick="showPage('character')">
+        <div class="stat-icon-wrap" id="wilIconWrap">
+          <img id="wilIcon" src="" alt="WIL">
+        </div>
+        <div class="stat-label-key" style="color:var(--neon-purple)">WIL</div>
+        <div class="stat-label-full">WILLPOWER</div>
+        <div class="stat-bar-track stat-bar-WIL">
+          <div class="stat-bar-fill" id="statBarWIL" style="width:0%"></div>
+        </div>
+        <div class="stat-num" id="statNumWIL" style="color:var(--neon-purple)">0</div>
+      </div>
+
+      <!-- Streak -->
+      <div class="glass streak-card">
+        <span class="streak-fire">🔥</span>
+        <div class="streak-num" id="streakNum">0</div>
+        <div class="streak-label">DAY STREAK</div>
+        <div class="streak-mult" id="streakMult">1.0× MULTIPLIER</div>
+      </div>
+
+      <!-- Campaign Progress -->
+      <div class="glass campaign-card" style="grid-column: 2/4">
+        <div class="campaign-header">
+          <div>
+            <div class="campaign-title">12-WEEK DUNGEON CAMPAIGN</div>
+            <div class="campaign-sub" id="campaignSub">Loading progress...</div>
+          </div>
+          <div class="campaign-pct" id="campaignPct">0%</div>
+        </div>
+        <div class="campaign-track">
+          <div class="campaign-fill" id="campaignFill" style="width:0%"></div>
+        </div>
+        <div class="week-nodes" id="weekNodes">
+          <!-- filled by JS -->
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════ CHARACTER PAGE ══════════ -->
+  <div class="page" id="page-character">
+    <div class="page-topbar">
+      <div class="page-heading">CHARACTER <span>PANEL</span></div>
+    </div>
+    <div class="char-layout">
+      <div class="char-portrait-panel">
+        <div class="glass char-portrait-card">
+          <img class="char-avatar" id="charAvatar" src="" alt="Character">
+          <div class="char-rank-display">
+            <div class="char-rank-letter" id="charRankLetter">D</div>
+            <div class="char-rank-name" id="charRankName">D-RANK HUNTER</div>
+            <div class="char-rank-msg" id="charRankMsg">You have shown your will. The gates open.</div>
+          </div>
+        </div>
+        <div class="glass char-level-card">
+          <div class="level-header">
+            <div>
+              <div class="level-label">CURRENT LEVEL</div>
+              <div class="level-num" id="charLevel">1</div>
+            </div>
+            <div>
+              <div class="next-rank-label">NEXT RANK</div>
+              <div class="next-rank-val" id="charNextRank">C-Rank</div>
+            </div>
+          </div>
+          <div class="xp-label-row">
+            <div class="xp-label">HUNTER XP</div>
+            <div class="xp-value" id="charXpVal">0 / 150 XP</div>
+          </div>
+          <div class="xp-bar-track">
+            <div class="xp-bar-fill" id="charXpBar" style="width:0%"></div>
+          </div>
+        </div>
+        <!-- Shadow Army -->
+        <div class="glass shadow-army-card">
+          <div class="section-label">SHADOW ARMY</div>
+          <div class="shadow-grid" id="shadowGrid"></div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <!-- RPG Stats -->
+        <div class="glass rpg-stats-card">
+          <div class="rpg-stats-title">HUNTER ATTRIBUTES</div>
+
+          <div class="rpg-stat-row rpg-STR">
+            <div class="rpg-stat-icon rpg-STR">
+              <img id="rpgStrIcon" src="" alt="STR">
+            </div>
+            <div class="rpg-stat-info">
+              <div class="rpg-stat-name">
+                <div>
+                  <span class="rpg-stat-key">STR</span>
+                  <span class="rpg-stat-full"> · Strength</span>
+                </div>
+                <div class="rpg-stat-val rpg-STR" id="rpgValSTR">0</div>
+              </div>
+              <div class="rpg-stat-track stat-bar-STR">
+                <div class="rpg-stat-fill" id="rpgBarSTR" style="width:0%"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="rpg-stat-row rpg-END">
+            <div class="rpg-stat-icon rpg-END">
+              <img id="rpgEndIcon" src="" alt="END">
+            </div>
+            <div class="rpg-stat-info">
+              <div class="rpg-stat-name">
+                <div>
+                  <span class="rpg-stat-key">END</span>
+                  <span class="rpg-stat-full"> · Endurance</span>
+                </div>
+                <div class="rpg-stat-val" id="rpgValEND" style="color:var(--neon-cyan)">0</div>
+              </div>
+              <div class="rpg-stat-track stat-bar-END">
+                <div class="rpg-stat-fill" id="rpgBarEND" style="width:0%"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="rpg-stat-row rpg-AGI">
+            <div class="rpg-stat-icon rpg-AGI">
+              <img id="rpgAgiIcon" src="" alt="AGI">
+            </div>
+            <div class="rpg-stat-info">
+              <div class="rpg-stat-name">
+                <div>
+                  <span class="rpg-stat-key">AGI</span>
+                  <span class="rpg-stat-full"> · Agility</span>
+                </div>
+                <div class="rpg-stat-val" id="rpgValAGI" style="color:var(--neon-green)">0</div>
+              </div>
+              <div class="rpg-stat-track stat-bar-AGI">
+                <div class="rpg-stat-fill" id="rpgBarAGI" style="width:0%"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="rpg-stat-row rpg-WIL">
+            <div class="rpg-stat-icon rpg-WIL">
+              <img id="rpgWilIcon" src="" alt="WIL">
+            </div>
+            <div class="rpg-stat-info">
+              <div class="rpg-stat-name">
+                <div>
+                  <span class="rpg-stat-key">WIL</span>
+                  <span class="rpg-stat-full"> · Willpower</span>
+                </div>
+                <div class="rpg-stat-val" id="rpgValWIL" style="color:var(--neon-purple)">0</div>
+              </div>
+              <div class="rpg-stat-track stat-bar-WIL">
+                <div class="rpg-stat-fill" id="rpgBarWIL" style="width:0%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rank Progression -->
+        <div class="glass" style="padding:24px">
+          <div class="section-label">RANK PROGRESSION</div>
+          <div id="rankProgressionList" style="display:flex;flex-direction:column;gap:8px"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ WORKOUT (QUEST) PAGE ══════════ -->
+  <div class="page" id="page-workout">
+    <div class="page-topbar">
+      <div class="page-heading">DAILY <span>QUESTS</span></div>
+      <div style="display:flex;gap:10px;align-items:center">
+        <div class="week-selector" id="workoutWeekSel">
+          <!-- filled by JS -->
+        </div>
+      </div>
+    </div>
+    <div class="workout-layout">
+      <!-- Day selector -->
+      <div class="day-selector" id="daySelectorList"></div>
+
+      <!-- Main workout area -->
+      <div class="workout-main">
+        <div class="glass quest-header-card" id="questHeaderCard">
+          <div class="quest-day-icon" id="questDayIcon">💪</div>
+          <div class="quest-info">
+            <div class="quest-day-title" id="questDayTitle">SELECT A DAY</div>
+            <div class="quest-day-focus" id="questDayFocus">Choose a day from the left panel</div>
+            <div class="quest-meta">
+              <span class="quest-badge quest-badge-xp" id="questXpBadge">⚡ +0 XP</span>
+              <span class="quest-badge quest-badge-diff" id="questDiffBadge">★ NORMAL</span>
+              <span class="quest-badge quest-badge-ex" id="questExBadge">0 EXERCISES</span>
+            </div>
+          </div>
+          <button class="start-quest-btn" id="startQuestBtn" onclick="markDayComplete()">START QUEST</button>
+        </div>
+
+        <div class="exercise-cards" id="exerciseCardList"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ NUTRITION PAGE ══════════ -->
+  <div class="page" id="page-nutrition">
+    <div class="page-topbar">
+      <div class="page-heading">NUTRITION <span>PROTOCOL</span></div>
+      <div class="week-selector" id="nutritionDaySel" style="margin-bottom:0">
+        <!-- days filled by JS -->
+      </div>
+    </div>
+    <div class="nutrition-layout">
+      <!-- Macro overview -->
+      <div class="glass macro-ring-card">
+        <div class="macro-rings">
+          <svg viewBox="0 0 120 120">
+            <!-- Fat ring (outer) -->
+            <circle class="ring-bg" cx="60" cy="60" r="54" stroke-width="8"/>
+            <circle class="ring-fat" cx="60" cy="60" r="54" stroke-width="8"
+              stroke-dasharray="339" id="ringFat" stroke-dashoffset="339"/>
+            <!-- Carbs ring (middle) -->
+            <circle class="ring-bg" cx="60" cy="60" r="44" stroke-width="8"/>
+            <circle class="ring-carbs" cx="60" cy="60" r="44" stroke-width="8"
+              stroke-dasharray="276" id="ringCarbs" stroke-dashoffset="276"/>
+            <!-- Protein ring (inner) -->
+            <circle class="ring-bg" cx="60" cy="60" r="34" stroke-width="8"/>
+            <circle class="ring-protein" cx="60" cy="60" r="34" stroke-width="8"
+              stroke-dasharray="213" id="ringProtein" stroke-dashoffset="213"/>
+          </svg>
+          <div class="ring-center">
+            <div class="ring-cal" id="ringCalTotal">0</div>
+            <div class="ring-cal-label">KCAL</div>
+          </div>
+        </div>
+        <div class="macro-legend">
+          <div class="macro-legend-row">
+            <div class="macro-legend-name"><div class="macro-dot" style="background:#ef4444"></div>Protein</div>
+            <div class="macro-legend-val" id="legendProtein" style="color:#ef4444">0g</div>
+          </div>
+          <div class="macro-legend-row">
+            <div class="macro-legend-name"><div class="macro-dot" style="background:var(--neon-gold)"></div>Carbohydrates</div>
+            <div class="macro-legend-val" id="legendCarbs" style="color:var(--neon-gold)">0g</div>
+          </div>
+          <div class="macro-legend-row">
+            <div class="macro-legend-name"><div class="macro-dot" style="background:var(--neon-cyan)"></div>Fats</div>
+            <div class="macro-legend-val" id="legendFat" style="color:var(--neon-cyan)">0g</div>
+          </div>
+        </div>
+        <div style="flex:1;padding-left:20px;border-left:1px solid rgba(255,255,255,0.06)">
+          <div class="section-label">DAILY TARGETS</div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+                <span style="font-size:12px;color:var(--text-muted)">Protein</span>
+                <span style="font-family:var(--font-display);font-size:11px;color:#ef4444" id="proteinTarget">0 / 100g</span>
+              </div>
+              <div class="xp-bar-track"><div class="xp-bar-fill" id="proteinBar" style="width:0%;background:#ef4444"></div></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+                <span style="font-size:12px;color:var(--text-muted)">Carbs</span>
+                <span style="font-family:var(--font-display);font-size:11px;color:var(--neon-gold)" id="carbsTarget">0 / 200g</span>
+              </div>
+              <div class="xp-bar-track"><div class="xp-bar-fill" id="carbsBar" style="width:0%;background:var(--neon-gold)"></div></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+                <span style="font-size:12px;color:var(--text-muted)">Fats</span>
+                <span style="font-family:var(--font-display);font-size:11px;color:var(--neon-cyan)" id="fatTarget">0 / 60g</span>
+              </div>
+              <div class="xp-bar-track"><div class="xp-bar-fill" id="fatBar" style="width:0%;background:var(--neon-cyan)"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Meals -->
+      <div class="glass meal-card" id="mealPreGym"></div>
+      <div class="glass meal-card" id="mealBreakfast"></div>
+      <div class="glass meal-card" id="mealSnack"></div>
+      <div class="glass meal-card" id="mealDinner"></div>
+    </div>
+  </div>
+
+  <!-- ══════════ WARMUP PAGE ══════════ -->
+  <div class="page" id="page-warmup">
+    <div class="page-topbar">
+      <div class="page-heading">WARMUP <span>PROTOCOLS</span></div>
+    </div>
+    <div class="warmup-cats" id="warmupCatBtns"></div>
+    <div class="warmup-layout">
+      <div>
+        <div class="section-label" id="warmupCatTitle">SELECT MUSCLE GROUP</div>
+        <div class="warmup-exercise-cards" id="warmupExCards"></div>
+      </div>
+      <div>
+        <div class="glass" style="padding:24px">
+          <div class="section-label">WARMUP TIPS</div>
+          <div style="font-size:13px;color:var(--text-muted);line-height:1.7;font-style:italic" id="warmupTipText">
+            Select a muscle group to see targeted warmup exercises. Warmup properly to prevent injury and maximize performance.
           </div>
         </div>
       </div>
     </div>
-  </section>
-
-  <!-- STATS ROW -->
-  <div class="sys-stats-row">
-    <div class="sys-stat" id="stat-card-wks">
-      <div class="sys-stat-icon">⚔</div>
-      <div class="sys-stat-val" id="stat-wks">0</div>
-      <div class="sys-stat-lbl">Weeks Done</div>
-    </div>
-    <div class="sys-stat">
-      <div class="sys-stat-icon">✓</div>
-      <div class="sys-stat-val" id="stat-ex">0</div>
-      <div class="sys-stat-lbl">Exercises</div>
-    </div>
-    <div class="sys-stat">
-      <div class="sys-stat-icon">◆</div>
-      <div class="sys-stat-val" id="stat-goals-cnt">0</div>
-      <div class="sys-stat-lbl">Quests Done</div>
-    </div>
-    <div class="sys-stat">
-      <div class="sys-stat-icon">▲</div>
-      <div class="sys-stat-val" id="stat-pct">0%</div>
-      <div class="sys-stat-lbl">Complete</div>
-    </div>
   </div>
 
-  <!-- CAMPAIGN PROGRESS -->
-  <div class="sys-section">
-    <div class="sys-section-hd">
-      <div class="sys-section-title">CAMPAIGN PROGRESS</div>
+  <!-- ══════════ HIIT PAGE ══════════ -->
+  <div class="page" id="page-hiit">
+    <div class="page-topbar">
+      <div class="page-heading">HIIT <span>TRAINING</span></div>
     </div>
-    <div class="sys-prog-block">
-      <div class="sys-prog-top">
-        <div>
-          <div class="sys-prog-label">12-Week Dungeon Campaign</div>
-          <div class="sys-prog-sub" id="prog-sub">Awaiting orders.</div>
-        </div>
-        <div class="sys-prog-pct" id="prog-pct-big">0%</div>
-      </div>
-      <div class="sys-prog-track">
-        <div class="sys-prog-fill" id="prog-fill" style="width:0%"></div>
-      </div>
-      <div class="sys-prog-weeks" id="prog-dots"></div>
-    </div>
-  </div>
-
-  <!-- 12-WEEK DUNGEON MAP -->
-  <div class="sys-section">
-    <div class="sys-section-hd">
-      <div class="sys-section-title">DUNGEON MAP</div>
-    </div>
-    <div class="dungeon-map" id="weeks-grid"></div>
-  </div>
-
-  <!-- BODY WEIGHT -->
-  <div class="sys-section">
-    <div class="sys-section-hd">
-      <div class="sys-section-title">BODY METRICS</div>
-      <button class="sys-action-btn" onclick="showPage('goals')">+ Quest</button>
-    </div>
-    <div class="sys-weight-block">
-      <div class="wstats-row">
-        <div class="wstat"><div class="wstat-lbl">Starting</div><div class="wstat-val" id="wt-start">—</div><div class="wstat-sub" id="wt-start-sub">No data</div></div>
-        <div class="wstat"><div class="wstat-lbl">Current</div><div class="wstat-val" id="wt-cur">—</div><div class="wstat-sub" id="wt-cur-sub">No data</div></div>
-        <div class="wstat"><div class="wstat-lbl">Change</div><div class="wstat-val" id="wt-chg">—</div><div class="wstat-sub" id="wt-chg-sub">Log 2+ weeks</div></div>
-      </div>
-      <div class="chart-wrap">
-        <div class="chart-controls">
-          <div class="chart-title2">Weight Over Time</div>
-          <div class="unit-toggle">
-            <button class="unit-btn active" id="btn-kg" onclick="setUnit('kg')">KG</button>
-            <button class="unit-btn" id="btn-lbs" onclick="setUnit('lbs')">LBS</button>
-          </div>
-        </div>
-        <div id="chart-area"></div>
-      </div>
-      <div class="wlog-wrap" id="wlog-wrap"></div>
-    </div>
-  </div>
-
-  <!-- SYSTEM ALERT (notifications) -->
-  <div class="sys-section" style="padding-bottom:100px">
-    <div class="sys-section-hd">
-      <div class="sys-section-title">SYSTEM ALERT</div>
-    </div>
-    <div class="sys-card sys-notif-card">
-      <div class="notif-row">
-        <div class="notif-label">Daily Summons<span>Notification when app is open</span></div>
-        <label class="notif-toggle">
-          <input type="checkbox" id="notif-toggle-inp" onchange="saveNotifSettings()">
-          <span class="notif-slider"></span>
-        </label>
-        <input type="time" class="notif-time-inp" id="notif-time-inp" value="07:00" onchange="saveNotifSettings()">
-        <button class="notif-save-btn" onclick="testNotification()">Test</button>
-      </div>
-      <div class="notif-status" id="notif-status"></div>
-    </div>
-  </div>
-</div>
-
-<!-- ════════════════════════════════════════
-     PAGE: CHARACTER
-════════════════════════════════════════ -->
-<div id="page-character" class="page">
-  <div class="char-page">
-    <!-- Full portrait backdrop -->
-    <div class="char-backdrop" id="char-backdrop">
-      <img class="char-backdrop-img" id="char-portrait-img" src="" alt="">
-      <div class="char-backdrop-fade"></div>
-      <div class="char-backdrop-scan"></div>
-    </div>
-
-    <!-- Hunter identity card overlay -->
-    <div class="char-identity">
-      <div class="char-rank-display" id="char-rank-big">E</div>
-      <div class="char-rank-title" id="char-rank-name">E-RANK HUNTER</div>
-      <div class="char-name-display" id="char-hunter-name-display">HUNTER</div>
-    </div>
-
-    <!-- Stats beneath -->
-    <div class="char-stats-area">
-
-      <!-- XP -->
-      <div class="char-block">
-        <div class="char-block-title">EXPERIENCE</div>
-        <div class="char-xp-wrap">
-          <div class="char-xp-top">
-            <span class="char-xp-label">TOTAL XP</span>
-            <span class="char-xp-val" id="char-xp-val">0 XP</span>
-          </div>
-          <div class="char-xp-track">
-            <div class="char-xp-fill" id="char-xp-fill" style="width:0%"></div>
-          </div>
-          <div class="char-xp-next" id="char-next-rank">Next rank unlocks at 100 XP</div>
-        </div>
-      </div>
-
-      <!-- Rank Journey -->
-      <div class="char-block">
-        <div class="char-block-title">RANK ASCENSION</div>
-        <div class="rank-ascension" id="rank-journey-strip"></div>
-      </div>
-
-      <!-- Stat Panel (STR / END / AGI / WIL) -->
-      <div class="char-block">
-        <div class="char-block-title">STAT PANEL</div>
-        <div class="rpg-stat-grid" id="stat-panel-grid"></div>
-      </div>
-
-      <!-- Shadow Army -->
-      <div class="char-block">
-        <div class="char-block-title">SHADOW ARMY</div>
-        <div class="char-block-sub">Unlock soldiers by logging PRs</div>
-        <div class="shadow-grid" id="shadow-army-grid"></div>
-      </div>
-
-      <!-- Cleared Dungeons -->
-      <div class="char-block" style="padding-bottom:100px">
-        <div class="char-block-title">CLEARED DUNGEONS</div>
-        <div class="cleared-grid" id="cleared-dungeons-grid"></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ════════════════════════════════════════
-     PAGE: WEEK (DUNGEON)
-════════════════════════════════════════ -->
-<div id="page-week" class="page">
-  <div class="dungeon-page-wrap">
-    <button class="sys-back-btn" onclick="showPage('home')">← BACK</button>
-    <div class="dungeon-page-header">
-      <div class="dungeon-page-num">DUNGEON <span id="wk-num-title">01</span></div>
-      <div class="dungeon-page-meta">
-        <span class="dungeon-phase-badge" id="wk-phase-badge">Foundation</span>
-        <span class="dungeon-prog-badge"><span id="wk-prog-pct">0%</span> cleared</span>
-      </div>
-    </div>
-    <div class="dungeon-guidance" id="wk-guidance-txt"></div>
-    <div id="week-body"></div>
-  </div>
-</div>
-
-<!-- ════════════════════════════════════════
-     PAGE: NUTRITION
-════════════════════════════════════════ -->
-<div id="page-nutr" class="page">
-  <div class="sys-page-wrap">
-    <div class="sys-page-header">
-      <div class="sys-page-title">⬡ NUTRITION</div>
-      <div class="sys-page-sub">Fuel your ascent</div>
-    </div>
-    <!-- day tabs -->
-    <div class="sys-day-tabs" id="nutr-day-tabs"></div>
-    <!-- calorie goal -->
-    <div class="sys-card sys-nutr-goal-card">
-      <div class="nutr-goal-row">
-        <span class="nutr-goal-label">Calorie Goal</span>
-        <input class="sys-inp" id="cal-goal-inp" type="number" min="800" max="5000" placeholder="1800">
-        <span style="color:var(--t2);font-size:12px">kcal</span>
-        <button class="sys-btn-sm" onclick="setCalGoal()">Set</button>
-      </div>
-    </div>
-    <!-- BMI nutr banner -->
-    <div id="bmi-nutr-status"></div>
-    <!-- Calorie ring + macros -->
-    <div class="sys-card nutr-ring-card">
-      <div class="nutr-ring-wrap">
-        <svg class="nutr-ring-svg" viewBox="0 0 100 100">
-          <circle cx="50" cy="50" r="42" fill="none" stroke="var(--surface3)" stroke-width="6"/>
-          <circle id="cal-ring-fill" cx="50" cy="50" r="42" fill="none"
-            stroke="var(--accent)" stroke-width="6"
-            stroke-dasharray="264" stroke-dashoffset="264"
-            stroke-linecap="round" transform="rotate(-90 50 50)"
-            style="transition:stroke-dashoffset 0.6s ease"/>
+    <div class="hiit-programs" id="hiitProgramCards"></div>
+    <div class="glass hiit-timer-card" id="hiitTimerCard">
+      <div class="hiit-timer-ring">
+        <svg viewBox="0 0 160 160">
+          <circle class="timer-ring-bg" cx="80" cy="80" r="70"/>
+          <circle class="timer-ring-progress" cx="80" cy="80" r="70"
+            id="timerRingEl"
+            stroke="var(--neon-purple)"
+            stroke-dasharray="439.8"
+            stroke-dashoffset="0"/>
         </svg>
-        <div class="nutr-ring-center">
-          <div class="nutr-ring-val" id="cal-eaten">0</div>
-          <div class="nutr-ring-lbl">kcal</div>
+        <div class="timer-display">
+          <div class="timer-secs" id="timerSecs">00</div>
+          <div class="timer-phase" id="timerPhase">READY</div>
         </div>
       </div>
-      <div class="nutr-macros-col">
-        <div class="nutr-macro-row">
-          <span class="nutr-macro-name">Protein</span>
-          <span class="nutr-macro-val" id="macro-protein-val">0g</span>
-        </div>
-        <div class="nutr-macro-bar-track"><div class="nutr-macro-bar" id="mb-protein" style="width:0%;background:var(--accent)"></div></div>
-        <div style="font-size:10px;color:var(--t2);text-align:right" id="mb-protein-val">0 / 150g</div>
-        <div class="nutr-macro-row" style="margin-top:8px">
-          <span class="nutr-macro-name">Carbs</span>
-          <span class="nutr-macro-val" id="macro-carbs-val">0g</span>
-        </div>
-        <div class="nutr-macro-bar-track"><div class="nutr-macro-bar" id="mb-carbs" style="width:0%;background:var(--blue)"></div></div>
-        <div style="font-size:10px;color:var(--t2);text-align:right" id="mb-carbs-val">0 / 200g</div>
-        <div class="nutr-macro-row" style="margin-top:8px">
-          <span class="nutr-macro-name">Fat</span>
-          <span class="nutr-macro-val" id="macro-fat-val">0g</span>
-        </div>
-        <div class="nutr-macro-bar-track"><div class="nutr-macro-bar" id="mb-fat" style="width:0%;background:var(--gold)"></div></div>
-        <div style="font-size:10px;color:var(--t2);text-align:right" id="mb-fat-val">0 / 55g</div>
-        <div class="nutr-remaining" id="cal-remaining-lbl">0 kcal remaining</div>
+      <div class="hiit-current-ex" id="hiitCurrentEx">Select a program above</div>
+      <div class="hiit-round-info" id="hiitRoundInfo">ROUND 0 / 0</div>
+      <div class="hiit-controls">
+        <button class="hiit-btn hiit-btn-start" id="hiitStartBtn" onclick="toggleHiit()">START</button>
+        <button class="hiit-btn hiit-btn-stop" onclick="resetHiit()">RESET</button>
       </div>
     </div>
-    <!-- Water -->
-    <div class="sys-card">
-      <div class="sys-card-title">HYDRATION</div>
-      <div class="water-row">
-        <div class="water-cups" id="water-cups"></div>
-        <div class="water-val" id="water-val">0 / 8</div>
-      </div>
-      <div id="water-hist-wrap"></div>
-    </div>
-    <!-- Meals -->
-    <div id="nutr-meals"></div>
   </div>
-</div>
 
-<!-- ════════════════════════════════════════
-     PAGE: WARMUP
-════════════════════════════════════════ -->
-<div id="page-warmup" class="page">
-  <div class="sys-page-wrap">
-    <div class="sys-page-header">
-      <div class="sys-page-title">▲ WARMUP</div>
-      <div class="sys-page-sub">Prepare for battle</div>
+  <!-- ══════════ DUNGEON MAP PAGE ══════════ -->
+  <div class="page" id="page-dungeonmap">
+    <div class="glass map-header">
+      <div class="map-title">DUNGEON MAP</div>
+      <div class="map-subtitle">12-WEEK CAMPAIGN — CLEAR EACH GATE TO ADVANCE</div>
     </div>
-    <div class="warmup-grid" id="warmup-grid"></div>
-    <div id="warmup-detail-container"></div>
+    <div class="glass dungeon-map" id="dungeonMapGrid"></div>
   </div>
-</div>
 
-<!-- ════════════════════════════════════════
-     PAGE: HIIT
-════════════════════════════════════════ -->
-<div id="page-hiit" class="page">
-  <div class="sys-page-wrap">
-    <div class="sys-page-header">
-      <div class="sys-page-title">⚡ HIIT</div>
-      <div class="sys-page-sub">Push past your limits</div>
+  <!-- ══════════ MUSCLE MAP PAGE ══════════ -->
+  <div class="page" id="page-musclemap">
+    <div class="page-topbar">
+      <div class="page-heading">MUSCLE <span>ANATOMY</span></div>
     </div>
-    <div id="hiit-content"></div>
-  </div>
-</div>
+    <div class="muscle-layout">
+      <div class="glass muscle-map-card">
+        <div class="section-label">TAP A MUSCLE GROUP TO EXPLORE</div>
+        <div class="muscle-svg-wrap">
+          <!-- Front body SVG -->
+          <div class="body-view">
+            <svg width="200" height="380" viewBox="0 0 200 380" xmlns="http://www.w3.org/2000/svg">
+              <!-- Head -->
+              <ellipse cx="100" cy="30" rx="22" ry="26" class="muscle-skeleton"/>
+              <!-- Neck -->
+              <rect x="92" y="52" width="16" height="18" rx="4" class="muscle-skeleton"/>
+              <!-- Torso frame -->
+              <rect x="65" y="68" width="70" height="80" rx="8" class="muscle-skeleton" opacity="0.4"/>
 
-<!-- ════════════════════════════════════════
-     PAGE: VOLUME
-════════════════════════════════════════ -->
-<div id="page-vol" class="page">
-  <div class="sys-page-wrap">
-    <div class="sys-page-header">
-      <div class="sys-page-title">◉ VOLUME</div>
-      <div class="sys-page-sub">Training load analysis</div>
-    </div>
-    <div class="vol-week-scroll" id="vol-week-select"></div>
-    <div class="vol-grid" id="vol-grid"></div>
-    <div class="sys-card" style="margin-top:16px;padding:12px">
-      <div id="vol-chart-area"></div>
-    </div>
-  </div>
-</div>
+              <!-- Chest -->
+              <g data-muscle="Chest" class="muscle-group" onclick="selectMuscle('Chest','front')">
+                <ellipse cx="86" cy="88" rx="16" ry="18" opacity="0.9"/>
+                <ellipse cx="114" cy="88" rx="16" ry="18" opacity="0.9"/>
+              </g>
 
-<!-- ════════════════════════════════════════
-     PAGE: CALENDAR
-════════════════════════════════════════ -->
-<div id="page-cal" class="page">
-  <div class="sys-page-wrap">
-    <div class="sys-page-header">
-      <div class="sys-page-title">▦ CALENDAR</div>
-    </div>
-    <div class="sys-cal-nav">
-      <button class="sys-nav-arrow" onclick="calPrev()">‹</button>
-      <span class="sys-cal-month" id="cal-month-title"></span>
-      <button class="sys-nav-arrow" onclick="calNext()">›</button>
-    </div>
-    <div class="cal-grid" id="cal-grid"></div>
-    <div class="cal-legend">
-      <span class="cal-leg worked">✓ Trained</span>
-      <span class="cal-leg partial">~ Partial</span>
-      <span class="cal-leg rest">Rest</span>
-    </div>
-  </div>
-</div>
+              <!-- Shoulders (Front delts) -->
+              <g data-muscle="Shoulders" class="muscle-group" onclick="selectMuscle('Shoulders','front')">
+                <ellipse cx="60" cy="78" rx="14" ry="16"/>
+                <ellipse cx="140" cy="78" rx="14" ry="16"/>
+              </g>
 
-<!-- ════════════════════════════════════════
-     PAGE: GOALS / QUESTS
-════════════════════════════════════════ -->
-<div id="page-goals" class="page">
-  <div class="sys-page-wrap">
-    <div class="sys-page-header">
-      <div class="sys-page-title">◆ QUESTS</div>
-      <div class="sys-page-sub">Issue and complete system objectives</div>
-    </div>
-    <div class="sys-card quest-add-card">
-      <input class="sys-inp quest-inp" id="goal-txt-inp" type="text"
-        placeholder="New quest objective…" maxlength="100">
-      <div class="quest-add-row">
-        <select class="sys-sel" id="goal-type-inp">
-          <option value="strength">Strength</option>
-          <option value="weight">Weight</option>
-          <option value="cardio">Cardio</option>
-          <option value="habit">Habit</option>
-          <option value="other">Other</option>
-        </select>
-        <button class="sys-btn" onclick="addGoal()">ISSUE QUEST</button>
-      </div>
-    </div>
-    <div class="quest-tabs">
-      <button class="qtab active" id="tab-active" onclick="switchGoalTab('active')">
-        ACTIVE <span class="qtab-count" id="cnt-active">0</span>
-      </button>
-      <button class="qtab" id="tab-done" onclick="switchGoalTab('done')">
-        COMPLETE <span class="qtab-count" id="cnt-done">0</span>
-      </button>
-    </div>
-    <div id="goals-list"></div>
-  </div>
-</div>
+              <!-- Biceps -->
+              <g data-muscle="Biceps" class="muscle-group" onclick="selectMuscle('Biceps','front')">
+                <rect x="42" y="100" width="14" height="36" rx="7"/>
+                <rect x="144" y="100" width="14" height="36" rx="7"/>
+              </g>
 
-<!-- ════════════════════════════════════════
-     PAGE: PRs
-════════════════════════════════════════ -->
-<div id="page-pr" class="page">
-  <div class="sys-page-wrap">
-    <div class="sys-page-header">
-      <div class="sys-page-title">★ RECORDS</div>
-      <div class="sys-page-sub">Personal power ceiling</div>
-    </div>
-    <div id="pr-grid"></div>
-    <div class="sys-section-title" style="margin:20px 0 12px">HISTORY</div>
-    <div id="pr-hist-list"></div>
-  </div>
-</div>
+              <!-- Forearms Front -->
+              <g data-muscle="Forearms" class="muscle-group" onclick="selectMuscle('Core','front')">
+                <rect x="38" y="142" width="12" height="40" rx="6" opacity="0.7"/>
+                <rect x="150" y="142" width="12" height="40" rx="6" opacity="0.7"/>
+              </g>
 
-<!-- ════════════════════════════════════════
-     PAGE: BMI
-════════════════════════════════════════ -->
-<div id="page-bmi" class="page">
-  <div class="sys-page-wrap">
-    <div class="sys-page-header">
-      <div class="sys-page-title">⬟ BMI & CALORIES</div>
-    </div>
-    <div id="bmi-content"></div>
-  </div>
-</div>
+              <!-- Core/Abs -->
+              <g data-muscle="Core" class="muscle-group" onclick="selectMuscle('Core','front')">
+                <rect x="83" y="110" width="10" height="12" rx="3"/>
+                <rect x="83" y="126" width="10" height="12" rx="3"/>
+                <rect x="83" y="142" width="10" height="12" rx="3"/>
+                <rect x="107" y="110" width="10" height="12" rx="3"/>
+                <rect x="107" y="126" width="10" height="12" rx="3"/>
+                <rect x="107" y="142" width="10" height="12" rx="3"/>
+              </g>
 
-<!-- ════════════════════════════════════════
-     PAGE: CUSTOMIZE
-════════════════════════════════════════ -->
-<div id="page-customize" class="page">
-  <div class="sys-page-wrap">
-    <div class="sys-page-header">
-      <div class="sys-page-title">⚙ CUSTOMIZE</div>
-      <div class="sys-page-sub">Configure your training protocol</div>
-    </div>
-    <div id="customize-content"></div>
-  </div>
-</div>
+              <!-- Obliques -->
+              <g data-muscle="Core" class="muscle-group" onclick="selectMuscle('Core','front')" opacity="0.6">
+                <ellipse cx="74" cy="140" rx="8" ry="18" transform="rotate(-10,74,140)"/>
+                <ellipse cx="126" cy="140" rx="8" ry="18" transform="rotate(10,126,140)"/>
+              </g>
 
-<!-- ════════════════════════════════════════
-     MODALS (keep original IDs exactly)
-════════════════════════════════════════ -->
+              <!-- Hips -->
+              <rect x="68" y="158" width="64" height="20" rx="6" class="muscle-skeleton" opacity="0.3"/>
 
-<!-- EXERCISE CUSTOMIZE MODAL -->
-<div class="modal-overlay" id="cust-modal" onclick="if(event.target===this)closeCustModal()">
-  <div class="modal-box">
-    <div class="modal-hd">
-      <div>
-        <div class="modal-title" id="cust-modal-title">Edit Exercise</div>
-        <div class="modal-sub" id="cust-modal-day"></div>
-      </div>
-      <button class="modal-close" onclick="closeCustModal()">✕</button>
-    </div>
-    <div class="modal-body">
-      <div class="modal-field"><label class="modal-lbl">Exercise Name</label><input class="sys-inp" id="cust-name-inp" type="text" placeholder="e.g. Barbell Squat"></div>
-      <div class="modal-field"><label class="modal-lbl">Sets × Reps</label><input class="sys-inp" id="cust-sets-inp" type="text" placeholder="e.g. 4×8–10"></div>
-      <div class="modal-field"><label class="modal-lbl">Num Sets</label><input class="sys-inp" id="cust-numsets-inp" type="number" min="0" max="10"></div>
-      <div class="modal-field"><label class="modal-lbl">Alternative</label><input class="sys-inp" id="cust-alt-inp" type="text" placeholder="e.g. Goblet Squat"></div>
-      <div class="modal-field">
-        <label class="modal-lbl">Apply to</label>
-        <select class="sys-sel" id="cust-scope-sel">
-          <option value="all">All 12 Weeks</option>
-          <option value="week">This Week Only</option>
-        </select>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="modal-reset-btn" onclick="resetCustModal()">Reset</button>
-      <button class="modal-save-btn" onclick="saveCustModal()">Save</button>
-    </div>
-  </div>
-</div>
+              <!-- Quads (front) -->
+              <g data-muscle="Legs" class="muscle-group" onclick="selectMuscle('Legs','front')">
+                <ellipse cx="84" cy="215" rx="18" ry="42"/>
+                <ellipse cx="116" cy="215" rx="18" ry="42"/>
+              </g>
 
-<!-- NUTRITION CUSTOMIZE MODAL -->
-<div class="modal-overlay" id="nutr-cust-modal" onclick="if(event.target===this)closeNutrCustomizeModal()">
-  <div class="modal-box">
-    <div class="modal-hd">
-      <div>
-        <div class="modal-title" id="nutr-cust-modal-title">Edit Meal Item</div>
-        <div class="modal-sub" id="nutr-cust-modal-day"></div>
-      </div>
-      <button class="modal-close" onclick="closeNutrCustomizeModal()">✕</button>
-    </div>
-    <div class="modal-body">
-      <div class="modal-field"><label class="modal-lbl">Item Name</label><input class="sys-inp" id="nutr-cust-name-inp" type="text"></div>
-      <div class="modal-field"><label class="modal-lbl">Calories (kcal)</label><input class="sys-inp" id="nutr-cust-cal-inp" type="number" min="0" max="9999"></div>
-      <div class="modal-field"><label class="modal-lbl">Protein (g)</label><input class="sys-inp" id="nutr-cust-protein-inp" type="number" min="0" max="999" step="0.5"></div>
-      <div class="modal-field"><label class="modal-lbl">Carbs (g)</label><input class="sys-inp" id="nutr-cust-carbs-inp" type="number" min="0" max="999" step="0.5"></div>
-      <div class="modal-field"><label class="modal-lbl">Fat (g)</label><input class="sys-inp" id="nutr-cust-fat-inp" type="number" min="0" max="999" step="0.5"></div>
-    </div>
-    <div class="modal-footer">
-      <button class="modal-reset-btn" onclick="resetNutrCustomizeModal()">Reset</button>
-      <button class="modal-save-btn" onclick="saveNutrCustomizeModal()">Save</button>
-    </div>
-  </div>
-</div>
+              <!-- Glutes (partial front) -->
+              <g data-muscle="Glutes" class="muscle-group" onclick="selectMuscle('Glutes','front')" opacity="0.5">
+                <ellipse cx="84" cy="180" rx="14" ry="14"/>
+                <ellipse cx="116" cy="180" rx="14" ry="14"/>
+              </g>
 
-<!-- EXERCISE DETAIL MODAL -->
-<div class="ex-modal-overlay" id="ex-modal" onclick="if(event.target===this)closeExModal()">
-  <div class="ex-modal-box">
-    <div class="ex-modal-hd" id="ex-modal-hd">
-      <div class="ex-modal-hd-left">
-        <div class="ex-modal-name" id="ex-modal-name">Exercise</div>
-        <div class="ex-modal-muscles" id="ex-modal-muscles"></div>
-      </div>
-      <button class="modal-close" onclick="closeExModal()">✕</button>
-    </div>
-    <div class="ex-modal-body" id="ex-modal-body">
-      <div class="ex-modal-img-wrap" id="ex-modal-img-wrap"></div>
-      <div class="ex-modal-section" id="ex-modal-cues-section">
-        <div class="ex-modal-section-title">⚡ Form Cues</div>
-        <div class="ex-modal-cues-list" id="ex-modal-cues"></div>
-      </div>
-      <div class="ex-modal-section" id="ex-modal-mistakes-section">
-        <div class="ex-modal-section-title">⚠ Common Mistakes</div>
-        <div class="ex-modal-mistake-txt" id="ex-modal-mistakes"></div>
-      </div>
-      <div class="ex-modal-chips" id="ex-modal-chips"></div>
-      <div id="ex-modal-cardio-section" style="display:none">
-        <div class="ex-modal-section">
-          <div class="ex-modal-section-title">ℹ How to do it</div>
-          <div class="ex-modal-cardio-tip" id="ex-modal-cardio-tip"></div>
-          <div class="ex-modal-cardio-zone" id="ex-modal-cardio-zone"></div>
-        </div>
-        <div class="ex-modal-section">
-          <div class="ex-modal-section-title">⏱ Cardio Timer</div>
-          <div class="ex-cardio-timer">
-            <div class="ex-cardio-timer-display" id="ex-cardio-display">20:00</div>
-            <div class="ex-cardio-presets">
-              <button class="ex-cardio-preset" onclick="setCardioTime(900)">15 min</button>
-              <button class="ex-cardio-preset active" onclick="setCardioTime(1200)">20 min</button>
-              <button class="ex-cardio-preset" onclick="setCardioTime(1500)">25 min</button>
-              <button class="ex-cardio-preset" onclick="setCardioTime(1800)">30 min</button>
-            </div>
-            <div class="ex-cardio-btns">
-              <button class="ex-cardio-btn primary" id="ex-cardio-start" onclick="cardioTimerToggle()">▶ Start</button>
-              <button class="ex-cardio-btn secondary" onclick="cardioTimerReset()">Reset</button>
-            </div>
+              <!-- Knee area -->
+              <ellipse cx="84" cy="265" rx="12" ry="8" class="muscle-skeleton"/>
+              <ellipse cx="116" cy="265" rx="12" ry="8" class="muscle-skeleton"/>
+
+              <!-- Calves front -->
+              <g data-muscle="Calves" class="muscle-group" onclick="selectMuscle('Calves','front')">
+                <ellipse cx="84" cy="310" rx="12" ry="30"/>
+                <ellipse cx="116" cy="310" rx="12" ry="30"/>
+              </g>
+
+              <!-- Feet -->
+              <ellipse cx="82" cy="350" rx="14" ry="8" class="muscle-skeleton"/>
+              <ellipse cx="118" cy="350" rx="14" ry="8" class="muscle-skeleton"/>
+            </svg>
+            <div class="body-view-label">FRONT VIEW</div>
+          </div>
+
+          <!-- Back body SVG -->
+          <div class="body-view">
+            <svg width="200" height="380" viewBox="0 0 200 380" xmlns="http://www.w3.org/2000/svg">
+              <!-- Head -->
+              <ellipse cx="100" cy="30" rx="22" ry="26" class="muscle-skeleton"/>
+              <!-- Neck -->
+              <rect x="92" y="52" width="16" height="18" rx="4" class="muscle-skeleton"/>
+              <!-- Torso frame -->
+              <rect x="65" y="68" width="70" height="80" rx="8" class="muscle-skeleton" opacity="0.3"/>
+
+              <!-- Traps -->
+              <g data-muscle="Back" class="muscle-group" onclick="selectMuscle('Back','back')">
+                <polygon points="100,65 130,85 100,95 70,85" opacity="0.8"/>
+              </g>
+
+              <!-- Rear delts -->
+              <g data-muscle="Shoulders" class="muscle-group" onclick="selectMuscle('Shoulders','back')">
+                <ellipse cx="60" cy="78" rx="14" ry="14"/>
+                <ellipse cx="140" cy="78" rx="14" ry="14"/>
+              </g>
+
+              <!-- Lats / Back -->
+              <g data-muscle="Back" class="muscle-group" onclick="selectMuscle('Back','back')">
+                <path d="M65,90 Q50,110 55,145 L80,148 L80,90 Z" opacity="0.9"/>
+                <path d="M135,90 Q150,110 145,145 L120,148 L120,90 Z" opacity="0.9"/>
+              </g>
+
+              <!-- Mid back -->
+              <g data-muscle="Back" class="muscle-group" onclick="selectMuscle('Back','back')" opacity="0.7">
+                <rect x="80" y="95" width="40" height="55" rx="4"/>
+              </g>
+
+              <!-- Triceps -->
+              <g data-muscle="Triceps" class="muscle-group" onclick="selectMuscle('Triceps','back')">
+                <rect x="42" y="98" width="14" height="36" rx="7"/>
+                <rect x="144" y="98" width="14" height="36" rx="7"/>
+              </g>
+
+              <!-- Lower back -->
+              <g data-muscle="Back" class="muscle-group" onclick="selectMuscle('Back','back')" opacity="0.6">
+                <rect x="80" y="152" width="40" height="24" rx="6"/>
+              </g>
+
+              <!-- Glutes -->
+              <g data-muscle="Glutes" class="muscle-group" onclick="selectMuscle('Glutes','back')">
+                <ellipse cx="86" cy="192" rx="18" ry="20"/>
+                <ellipse cx="114" cy="192" rx="18" ry="20"/>
+              </g>
+
+              <!-- Hamstrings -->
+              <g data-muscle="Hamstrings" class="muscle-group" onclick="selectMuscle('Hamstrings','back')">
+                <ellipse cx="84" cy="240" rx="17" ry="38"/>
+                <ellipse cx="116" cy="240" rx="17" ry="38"/>
+              </g>
+
+              <!-- Calves back -->
+              <g data-muscle="Calves" class="muscle-group" onclick="selectMuscle('Calves','back')">
+                <ellipse cx="84" cy="308" rx="14" ry="32"/>
+                <ellipse cx="116" cy="308" rx="14" ry="32"/>
+              </g>
+
+              <!-- Feet -->
+              <ellipse cx="82" cy="350" rx="14" ry="8" class="muscle-skeleton"/>
+              <ellipse cx="118" cy="350" rx="14" ry="8" class="muscle-skeleton"/>
+            </svg>
+            <div class="body-view-label">BACK VIEW</div>
           </div>
         </div>
-        <button class="ex-modal-done-btn" id="ex-modal-cardio-done" onclick="markExDoneFromModal()">✓ Mark as Done</button>
       </div>
-      <div id="ex-modal-weight-section" style="display:none">
-        <div class="ex-modal-section">
-          <div class="ex-modal-section-title">◉ Log Your Sets</div>
-          <div class="ex-modal-sets-grid" id="ex-modal-sets-grid"></div>
+
+      <!-- Muscle info panel -->
+      <div class="muscle-info-card" id="muscleInfoPanel">
+        <div class="glass muscle-select-hint">
+          <div style="font-size:32px;margin-bottom:12px">⚡</div>
+          <div>Tap any muscle group on the body map to see targeted exercises and information</div>
         </div>
-        <div class="ex-modal-feedback" id="ex-modal-feedback" style="display:none">
-          <div class="ex-modal-feedback-icon" id="ex-modal-feedback-icon">★</div>
-          <div class="ex-modal-feedback-txt" id="ex-modal-feedback-txt"></div>
-        </div>
-        <div class="ex-modal-section" id="ex-modal-progress-section">
-          <div class="ex-modal-section-title">▲ Progress</div>
-          <div id="ex-modal-progress-chart"></div>
-        </div>
-        <button class="ex-modal-done-btn" id="ex-modal-done-btn" onclick="markExDoneFromModal()">✓ Mark as Done</button>
       </div>
     </div>
   </div>
-</div>
 
-<!-- WORKOUT COMPLETE / DUNGEON CLEARED POPUP -->
-<div class="dungeon-cleared-overlay" id="workout-popup" onclick="if(event.target===this)closeWorkoutPopup()">
-  <div class="dungeon-cleared-box">
-    <div class="dc-particles" id="popup-confetti"></div>
-    <div class="dc-eye">
-      <div class="dc-eye-ring"></div>
-      <div class="dc-eye-core"></div>
+</div><!-- end app-shell -->
+
+<script src="data.js"></script>
+<script>
+/* ═══════════════════════════════════════════════
+   HUNTER'S SYSTEM — App Logic (Reimagined)
+═══════════════════════════════════════════════ */
+'use strict';
+
+// ── STATE ──
+let currentUnit = localStorage.getItem('hs_unit') || 'kg';
+let currentWeek = parseInt(localStorage.getItem('hs_week') || '1');
+let currentDayIdx = new Date().getDay() === 0 ? 6 : new Date().getDay() - 1; // 0=Mon
+let activeDayIdx = currentDayIdx;
+let hiitActiveProgram = null;
+let hiitInterval = null;
+let hiitRunning = false;
+let hiitSecs = 0;
+let hiitPhase = 'work';
+let hiitRound = 0;
+let hiitExIdx = 0;
+let activeMuscle = null;
+let warmupActiveCat = null;
+let nutritionDayIdx = new Date().getDay() === 0 ? 6 : new Date().getDay() - 1;
+
+// ── STORAGE HELPERS ──
+function getKey(week, day, ex, set) { return `hs_w${week}_d${day}_e${ex}_s${set}`; }
+function getExWeight(week, day, ex, set) { return localStorage.getItem(getKey(week, day, ex, set)) || ''; }
+function setExWeight(week, day, ex, set, val) { localStorage.setItem(getKey(week, day, ex, set), val); }
+function getDayDone(week, day) { return localStorage.getItem(`hs_done_w${week}_d${day}`) === '1'; }
+function setDayDone(week, day, v) { localStorage.setItem(`hs_done_w${week}_d${day}`, v ? '1' : '0'); }
+function getExDone(week, day, ex) { return localStorage.getItem(`hs_ex_w${week}_d${day}_e${ex}`) === '1'; }
+function setExDone(week, day, ex, v) { localStorage.setItem(`hs_ex_w${week}_d${day}_e${ex}`, v ? '1' : '0'); }
+
+// ── COMPUTED STATS ──
+function computeStats() {
+  let totalEx = 0, completedEx = 0, completedDays = 0, completedWeeks = 0;
+  for (let w = 1; w <= 12; w++) {
+    let weekDone = true;
+    for (let d = 0; d < 7; d++) {
+      if (!getDayDone(w, d)) weekDone = false;
+      for (let e = 0; e < DAYS[d].exercises.length; e++) {
+        totalEx++;
+        if (getExDone(w, d, e)) completedEx++;
+      }
+    }
+    if (weekDone) completedWeeks++;
+  }
+  for (let w = 1; w <= 12; w++)
+    for (let d = 0; d < 7; d++)
+      if (getDayDone(w, d)) completedDays++;
+
+  return { totalEx, completedEx, completedDays, completedWeeks };
+}
+
+function computeXP() {
+  const s = computeStats();
+  return s.completedEx * XP_PER_EXERCISE + s.completedWeeks * XP_PER_WEEK_COMPLETE;
+}
+
+function computeRPGStats() {
+  let str = 0, end = 0, agi = 0, wil = 0;
+  const s = computeStats();
+  // Strength from compound exercises (chest, back, legs days)
+  for (let w = 1; w <= 12; w++) {
+    for (let d of [0, 1, 2, 5, 6]) { // Mon, Tue, Wed, Sat, Sun
+      for (let e = 0; e < DAYS[d].exercises.length; e++) {
+        if (getExDone(w, d, e) && !DAYS[d].exercises[e].cardio) str++;
+      }
+    }
+    // Endurance from cardio
+    for (let d = 0; d < 7; d++) {
+      for (let e = 0; e < DAYS[d].exercises.length; e++) {
+        if (getExDone(w, d, e) && DAYS[d].exercises[e].cardio) end++;
+      }
+    }
+  }
+  // Agility from active recovery and consistency
+  agi = s.completedDays;
+  // Willpower from total weeks completed
+  wil = s.completedWeeks * 8 + s.completedEx;
+  return { str: Math.min(str, 100), end: Math.min(end, 100), agi: Math.min(agi, 100), wil: Math.min(wil, 100) };
+}
+
+function getRankForXP(xp) {
+  let rank = RANKS[0];
+  for (const r of RANKS) { if (xp >= r.xpRequired) rank = r; }
+  return rank;
+}
+
+function getStreak() {
+  let streak = 0;
+  const today = new Date();
+  for (let i = 0; i < 365; i++) {
+    const d = new Date(today); d.setDate(d.getDate() - i);
+    const weekday = d.getDay() === 0 ? 6 : d.getDay() - 1;
+    // check any week
+    let found = false;
+    for (let w = 1; w <= 12; w++) { if (getDayDone(w, weekday)) { found = true; break; } }
+    if (found) streak++;
+    else if (i > 0) break;
+  }
+  return streak;
+}
+
+// ── NAVIGATION ──
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  const page = document.getElementById('page-' + name);
+  if (page) page.classList.add('active');
+  document.querySelectorAll(`.nav-tab[data-page="${name}"]`).forEach(t => t.classList.add('active'));
+  // Refresh relevant sections
+  if (name === 'home') refreshHome();
+  if (name === 'character') refreshCharacter();
+  if (name === 'workout') refreshWorkout();
+  if (name === 'nutrition') refreshNutrition();
+  if (name === 'warmup') refreshWarmup();
+  if (name === 'hiit') refreshHiit();
+  if (name === 'dungeonmap') refreshMap();
+}
+
+document.querySelectorAll('.nav-tab[data-page]').forEach(tab => {
+  tab.addEventListener('click', () => showPage(tab.dataset.page));
+});
+
+// ── UNIT ──
+function setUnit(u) {
+  currentUnit = u;
+  localStorage.setItem('hs_unit', u);
+  document.getElementById('unitKg').classList.toggle('active', u === 'kg');
+  document.getElementById('unitLbs').classList.toggle('active', u === 'lbs');
+}
+
+// ── XP TOAST ──
+function showXPToast(msg) {
+  const container = document.getElementById('xpPop');
+  const toast = document.createElement('div');
+  toast.className = 'xp-toast';
+  toast.textContent = msg;
+  container.appendChild(toast);
+  setTimeout(() => toast.remove(), 2600);
+}
+
+// ── LEVEL UP ──
+function showLevelUp(rank, boosts) {
+  document.getElementById('levelupTitle').textContent = rank.letter === 'E' ? 'RANK UP!' : `${rank.letter}-RANK ACHIEVED`;
+  document.getElementById('levelupSub').textContent = rank.msg;
+  const boostEl = document.getElementById('levelupBoosts');
+  boostEl.innerHTML = boosts.map(b => `<div class="levelup-boost">${b}</div>`).join('');
+  document.getElementById('levelupOverlay').classList.add('show');
+}
+function closeLevelup() { document.getElementById('levelupOverlay').classList.remove('show'); }
+
+// ── HOME ──
+function refreshHome() {
+  const xp = computeXP();
+  const rank = getRankForXP(xp);
+  const nextRankIdx = RANKS.indexOf(rank) + 1;
+  const nextRank = RANKS[nextRankIdx];
+  const xpForNext = nextRank ? nextRank.xpRequired : rank.xpRequired;
+  const xpPrev = rank.xpRequired;
+  const pct = nextRank ? Math.round(((xp - xpPrev) / (xpForNext - xpPrev)) * 100) : 100;
+
+  // Portrait
+  const theme = 'dark';
+  const imgRank = rank.letter;
+  document.getElementById('heroPortrait').src = CHAR_IMAGES[theme][imgRank] || '';
+  document.getElementById('heroRankLabel').textContent = rank.name.toUpperCase();
+  document.getElementById('heroRankMsg').textContent = rank.msg;
+  document.getElementById('heroXpVal').textContent = `${xp} / ${xpForNext} XP`;
+  document.getElementById('heroXpBar').style.width = pct + '%';
+  document.getElementById('navRankBadge').textContent = rank.letter;
+
+  const stats = computeStats();
+  document.getElementById('heroWeeks').textContent = stats.completedWeeks;
+  document.getElementById('heroExercises').textContent = stats.completedEx;
+  document.getElementById('heroQuests').textContent = stats.completedDays;
+  document.getElementById('heroPct').textContent = Math.round((stats.completedEx / stats.totalEx) * 100) + '%';
+
+  // Stat icons
+  const iconTheme = 'dark';
+  document.getElementById('strIcon').src = STAT_ICONS[iconTheme].STR;
+  document.getElementById('endIcon').src = STAT_ICONS[iconTheme].END;
+  document.getElementById('agiIcon').src = STAT_ICONS[iconTheme].AGI;
+  document.getElementById('wilIcon').src = STAT_ICONS[iconTheme].WIL;
+
+  const rpg = computeRPGStats();
+  document.getElementById('statNumSTR').textContent = rpg.str;
+  document.getElementById('statNumEND').textContent = rpg.end;
+  document.getElementById('statNumAGI').textContent = rpg.agi;
+  document.getElementById('statNumWIL').textContent = rpg.wil;
+  document.getElementById('statBarSTR').style.width = rpg.str + '%';
+  document.getElementById('statBarEND').style.width = rpg.end + '%';
+  document.getElementById('statBarAGI').style.width = rpg.agi + '%';
+  document.getElementById('statBarWIL').style.width = rpg.wil + '%';
+
+  // Streak
+  const streak = getStreak();
+  document.getElementById('streakNum').textContent = streak;
+  const mult = (1 + streak * 0.05).toFixed(2);
+  document.getElementById('streakMult').textContent = `${mult}× MULTIPLIER`;
+
+  // Today's quest
+  const todayDay = DAYS[currentDayIdx];
+  document.getElementById('todayTitle').textContent = `TODAY — ${todayDay.day.toUpperCase()}`;
+  document.getElementById('todaySubtitle').textContent = todayDay.focus;
+  const todayXP = todayDay.exercises.filter(e => !e.cardio).length * XP_PER_EXERCISE;
+  document.getElementById('todayXpBadge').textContent = `⚡ +${todayXP} XP`;
+  const todayList = document.getElementById('todayExerciseList');
+  todayList.innerHTML = todayDay.exercises.map((ex, i) => {
+    const done = getExDone(currentWeek, currentDayIdx, i);
+    return `<div class="ex-row${done?' done':''}" onclick="toggleExDone(${currentDayIdx},${i},this)">
+      <div class="ex-check">${done ? '✓' : ''}</div>
+      <div class="ex-name">${ex.name}</div>
+      <div class="ex-sets-tag${ex.cardio?' ex-type-cardio':''}">${ex.sets}</div>
+    </div>`;
+  }).join('');
+
+  // Campaign
+  const overallPct = Math.round((stats.completedEx / stats.totalEx) * 100);
+  document.getElementById('campaignPct').textContent = overallPct + '%';
+  document.getElementById('campaignFill').style.width = overallPct + '%';
+  document.getElementById('campaignSub').textContent = overallPct < 20 ? 'Early days — stay consistent!' : overallPct < 60 ? 'Halfway through the dungeon!' : 'The final boss approaches!';
+
+  // Week nodes
+  const nodesEl = document.getElementById('weekNodes');
+  nodesEl.innerHTML = '';
+  for (let w = 1; w <= 12; w++) {
+    let completedInWeek = 0;
+    for (let d = 0; d < 7; d++) { if (getDayDone(w, d)) completedInWeek++; }
+    const cls = completedInWeek === 7 ? 'completed' : (w === currentWeek ? 'active' : (w < currentWeek ? 'completed' : 'locked'));
+    nodesEl.innerHTML += `<div class="week-node ${cls}" onclick="setWeek(${w})" title="Week ${w}: ${PHASE_NAMES[w]}">${w}</div>`;
+  }
+}
+
+function setWeek(w) {
+  currentWeek = w;
+  localStorage.setItem('hs_week', w);
+  refreshHome();
+  refreshWorkout();
+}
+
+function toggleExDone(dayIdx, exIdx, rowEl) {
+  const wasDone = getExDone(currentWeek, dayIdx, exIdx);
+  const newVal = !wasDone;
+  setExDone(currentWeek, dayIdx, exIdx, newVal);
+  rowEl.classList.toggle('done', newVal);
+  rowEl.querySelector('.ex-check').textContent = newVal ? '✓' : '';
+  if (newVal) {
+    const ex = DAYS[dayIdx].exercises[exIdx];
+    const xpGain = ex.cardio ? 3 : XP_PER_EXERCISE;
+    showXPToast(`⚡ +${xpGain} XP — ${ex.name}`);
+    // check rank up
+    checkRankUp();
+  }
+  refreshHome();
+}
+
+function checkRankUp() {
+  const xp = computeXP();
+  const prevXP = parseInt(localStorage.getItem('hs_prev_xp') || '0');
+  const prevRank = getRankForXP(prevXP);
+  const currRank = getRankForXP(xp);
+  if (currRank.xpRequired > prevRank.xpRequired) {
+    const rpg = computeRPGStats();
+    showLevelUp(currRank, [`+10 STR`, `+10 END`, `+5 AGI`, `+5 WIL`]);
+  }
+  localStorage.setItem('hs_prev_xp', xp);
+}
+
+// ── CHARACTER ──
+function refreshCharacter() {
+  const xp = computeXP();
+  const rank = getRankForXP(xp);
+  const nextRankIdx = RANKS.indexOf(rank) + 1;
+  const nextRank = RANKS[nextRankIdx];
+  const xpForNext = nextRank ? nextRank.xpRequired : rank.xpRequired;
+  const xpPrev = rank.xpRequired;
+  const pct = nextRank ? Math.round(((xp - xpPrev) / (xpForNext - xpPrev)) * 100) : 100;
+
+  document.getElementById('charAvatar').src = CHAR_IMAGES.dark[rank.letter] || '';
+  document.getElementById('charRankLetter').textContent = rank.letter;
+  document.getElementById('charRankName').textContent = rank.name.toUpperCase();
+  document.getElementById('charRankMsg').textContent = rank.msg;
+
+  const level = Math.floor(xp / 10) + 1;
+  document.getElementById('charLevel').textContent = level;
+  document.getElementById('charNextRank').textContent = nextRank ? nextRank.name : 'MAX RANK';
+  document.getElementById('charXpVal').textContent = `${xp} / ${xpForNext} XP`;
+  document.getElementById('charXpBar').style.width = pct + '%';
+
+  // RPG icons
+  document.getElementById('rpgStrIcon').src = STAT_ICONS.dark.STR;
+  document.getElementById('rpgEndIcon').src = STAT_ICONS.dark.END;
+  document.getElementById('rpgAgiIcon').src = STAT_ICONS.dark.AGI;
+  document.getElementById('rpgWilIcon').src = STAT_ICONS.dark.WIL;
+
+  const rpg = computeRPGStats();
+  document.getElementById('rpgValSTR').textContent = rpg.str;
+  document.getElementById('rpgValEND').textContent = rpg.end;
+  document.getElementById('rpgValAGI').textContent = rpg.agi;
+  document.getElementById('rpgValWIL').textContent = rpg.wil;
+  document.getElementById('rpgBarSTR').style.width = rpg.str + '%';
+  document.getElementById('rpgBarEND').style.width = rpg.end + '%';
+  document.getElementById('rpgBarAGI').style.width = rpg.agi + '%';
+  document.getElementById('rpgBarWIL').style.width = rpg.wil + '%';
+
+  // Shadow army
+  const shadowGrid = document.getElementById('shadowGrid');
+  shadowGrid.innerHTML = SHADOW_NAMES.map(s => {
+    const prs = parseInt(localStorage.getItem('hs_prs') || '0');
+    const unlocked = s.lift ? computeStats().completedEx >= 10 : prs >= s.req;
+    return `<div class="shadow-token ${unlocked ? 'unlocked' : 'locked'}" title="${s.name}">
+      <div class="shadow-icon">${s.icon}</div>
+      <div class="shadow-name">${s.name}</div>
+    </div>`;
+  }).join('');
+
+  // Rank progression
+  const rankList = document.getElementById('rankProgressionList');
+  rankList.innerHTML = RANKS.map(r => {
+    const achieved = xp >= r.xpRequired;
+    const isCurrent = rank.letter === r.letter;
+    return `<div style="display:flex;align-items:center;gap:12px;padding:10px 14px;border-radius:10px;background:${isCurrent ? 'rgba(139,92,246,0.08)' : 'rgba(255,255,255,0.02)'};border:1px solid ${isCurrent ? 'rgba(139,92,246,0.25)' : 'rgba(255,255,255,0.04)'}">
+      <div style="width:32px;height:32px;border-radius:8px;background:${achieved ? r.color+'22' : 'rgba(255,255,255,0.03)'};border:1px solid ${achieved ? r.color+'44' : 'rgba(255,255,255,0.06)'};display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:12px;font-weight:700;color:${achieved ? r.color : 'var(--text-muted)'}">
+        ${r.letter}
+      </div>
+      <div style="flex:1">
+        <div style="font-family:var(--font-ui);font-size:13px;font-weight:600;color:${achieved ? 'var(--text-primary)' : 'var(--text-muted)'}">
+          ${r.name}
+        </div>
+        <div style="font-size:11px;color:var(--text-muted)">${r.xpRequired} XP required</div>
+      </div>
+      ${achieved ? `<div style="font-size:16px">${isCurrent ? '⚡' : '✓'}</div>` : `<div style="font-family:var(--font-display);font-size:10px;color:var(--text-muted)">${r.xpRequired - xp} XP</div>`}
+    </div>`;
+  }).join('');
+}
+
+// ── WORKOUT ──
+function refreshWorkout() {
+  // Week selector
+  const weekSel = document.getElementById('workoutWeekSel');
+  weekSel.innerHTML = Array.from({length: 12}, (_,i) => {
+    const w = i + 1;
+    return `<button class="week-sel-btn${w === currentWeek ? ' active' : ''}" onclick="selectWorkoutWeek(${w})">W${w} · ${PHASE_NAMES[w]}</button>`;
+  }).join('');
+
+  // Day selector
+  const dayList = document.getElementById('daySelectorList');
+  dayList.innerHTML = DAYS.map((day, i) => {
+    const doneCt = day.exercises.filter((_,ei) => getExDone(currentWeek, i, ei)).length;
+    const total = day.exercises.length;
+    const allDone = getDayDone(currentWeek, i);
+    let badgeCls = '', badgeIcon = '';
+    if (allDone || doneCt === total) { badgeCls = 'done'; badgeIcon = '✓'; }
+    else if (doneCt > 0) { badgeCls = 'partial'; badgeIcon = '◐'; }
+    return `<div class="glass day-card${i === activeDayIdx ? ' active' : ''}" onclick="selectDay(${i})">
+      <div class="day-card-top">
+        <div class="day-name">${DAY_ICONS[i]} ${day.day}</div>
+        ${badgeIcon ? `<div class="day-badge ${badgeCls}">${badgeIcon}</div>` : ''}
+      </div>
+      <div class="day-focus">${day.focus}</div>
+      <div class="day-ex-count">${doneCt}/${total} EXERCISES</div>
+    </div>`;
+  }).join('');
+
+  renderDayExercises(activeDayIdx);
+}
+
+function selectWorkoutWeek(w) {
+  currentWeek = w;
+  localStorage.setItem('hs_week', w);
+  refreshWorkout();
+}
+
+function selectDay(idx) {
+  activeDayIdx = idx;
+  refreshWorkout();
+}
+
+function renderDayExercises(dayIdx) {
+  const day = DAYS[dayIdx];
+  const icons = ['💪','🏋️','🦵','🚶','🏔️','💪','🍑'];
+  const xpEarned = day.exercises.filter((e,i) => getExDone(currentWeek, dayIdx, i) && !e.cardio).length * XP_PER_EXERCISE;
+  const xpTotal = day.exercises.filter(e => !e.cardio).length * XP_PER_EXERCISE;
+
+  document.getElementById('questDayIcon').textContent = icons[dayIdx];
+  document.getElementById('questDayTitle').textContent = `${day.day.toUpperCase()} QUEST`;
+  document.getElementById('questDayFocus').textContent = day.focus;
+  document.getElementById('questXpBadge').textContent = `⚡ ${xpEarned} / ${xpTotal} XP`;
+  document.getElementById('questDiffBadge').textContent = day.exercises.length > 5 ? '★★ HARD' : '★ NORMAL';
+  document.getElementById('questExBadge').textContent = `${day.exercises.length} EXERCISES`;
+
+  const allDone = day.exercises.every((_,i) => getExDone(currentWeek, dayIdx, i));
+  const btn = document.getElementById('startQuestBtn');
+  btn.textContent = allDone ? 'QUEST CLEAR ✓' : 'COMPLETE ALL';
+  btn.style.opacity = allDone ? '0.6' : '1';
+
+  const cards = document.getElementById('exerciseCardList');
+  cards.innerHTML = day.exercises.map((ex, i) => {
+    const done = getExDone(currentWeek, dayIdx, i);
+    const muscle = MUSCLE_MAP[ex.name] || (ex.cardio ? 'Cardio' : 'Compound');
+    const tips = EX_FORM_TIPS[ex.name];
+    const imgSrc = EX_IMAGES[ex.name] || '';
+    const sets = ex.numSets || 0;
+    const weightInputs = sets > 0 ? `
+      <div class="weight-logger">
+        ${Array.from({length: sets}, (_,s) => `
+          <div class="set-log">
+            <div class="set-log-label">SET ${s+1}</div>
+            <input class="set-log-input" type="number" placeholder="0"
+              value="${getExWeight(currentWeek, dayIdx, i, s)}"
+              onchange="saveWeight(${dayIdx},${i},${s},this.value)">
+            <div class="set-log-unit">${currentUnit}</div>
+          </div>
+        `).join('')}
+      </div>` : '';
+
+    const formCues = tips ? `
+      <div class="form-tips">
+        <div class="form-tip-title">FORM CUES — ${tips.muscles}</div>
+        <div class="form-cues">
+          ${tips.cues.slice(0,3).map(c => `<div class="form-cue">${c}</div>`).join('')}
+        </div>
+      </div>` : '';
+
+    return `<div class="glass exercise-card${done ? ' done-card' : ''}">
+      <div class="ex-card-top">
+        <img class="ex-card-gif" src="${imgSrc}" alt="${ex.name}" onerror="this.style.display='none'">
+        <div class="ex-card-info">
+          <div class="ex-card-name">${ex.name}</div>
+          <div class="ex-card-meta">
+            <span class="ex-tag ${ex.cardio ? 'ex-tag-cardio' : 'ex-tag-muscle'}">${muscle}</span>
+            <span class="ex-tag ex-tag-sets">${ex.sets}</span>
+          </div>
+        </div>
+        <button class="ex-complete-btn ${done ? 'done' : 'todo'}"
+          onclick="toggleExerciseCard(${dayIdx},${i},this)">
+          ${done ? '✓ DONE' : 'COMPLETE'}
+        </button>
+      </div>
+      ${weights_log: sets > 0 ? weightInputs : ''}
+      ${formCues}
+    </div>`;
+  }).join('').replace(/weights_log:.*?(?=\n)/g, '');
+
+  // Actually render properly:
+  cards.innerHTML = day.exercises.map((ex, i) => {
+    const done = getExDone(currentWeek, dayIdx, i);
+    const muscle = MUSCLE_MAP[ex.name] || (ex.cardio ? 'Cardio' : 'Compound');
+    const tips = EX_FORM_TIPS[ex.name];
+    const imgSrc = EX_IMAGES[ex.name] || '';
+    const sets = ex.numSets || 0;
+
+    let weightHTML = '';
+    if (sets > 0) {
+      weightHTML = `<div class="weight-logger">`;
+      for (let s = 0; s < sets; s++) {
+        const val = getExWeight(currentWeek, dayIdx, i, s);
+        weightHTML += `<div class="set-log">
+          <div class="set-log-label">SET ${s+1}</div>
+          <input class="set-log-input" type="number" placeholder="0"
+            value="${val}" onchange="saveWeight(${dayIdx},${i},${s},this.value)">
+          <div class="set-log-unit">${currentUnit}</div>
+        </div>`;
+      }
+      weightHTML += '</div>';
+    }
+
+    let formHTML = '';
+    if (tips) {
+      formHTML = `<div class="form-tips">
+        <div class="form-tip-title">FORM CUES · ${tips.muscles}</div>
+        <div class="form-cues">${tips.cues.slice(0,3).map(c => `<div class="form-cue">${c}</div>`).join('')}</div>
+      </div>`;
+    }
+
+    return `<div class="glass exercise-card${done?' done-card':''}">
+      <div class="ex-card-top">
+        <img class="ex-card-gif" src="${imgSrc}" alt="${ex.name}" onerror="this.style.display='none'">
+        <div class="ex-card-info">
+          <div class="ex-card-name">${ex.name}</div>
+          <div class="ex-card-meta">
+            <span class="ex-tag ${ex.cardio?'ex-tag-cardio':'ex-tag-muscle'}">${muscle}</span>
+            <span class="ex-tag ex-tag-sets">${ex.sets}</span>
+          </div>
+        </div>
+        <button class="ex-complete-btn ${done?'done':'todo'}" onclick="toggleExerciseCard(${dayIdx},${i},this)">
+          ${done ? '✓ DONE' : 'COMPLETE'}
+        </button>
+      </div>
+      ${weightHTML}
+      ${formHTML}
+    </div>`;
+  }).join('');
+}
+
+function toggleExerciseCard(dayIdx, exIdx, btn) {
+  const card = btn.closest('.exercise-card');
+  const wasDone = getExDone(currentWeek, dayIdx, exIdx);
+  const newVal = !wasDone;
+  setExDone(currentWeek, dayIdx, exIdx, newVal);
+  card.classList.toggle('done-card', newVal);
+  btn.classList.toggle('todo', !newVal);
+  btn.classList.toggle('done', newVal);
+  btn.textContent = newVal ? '✓ DONE' : 'COMPLETE';
+  if (newVal) {
+    const ex = DAYS[dayIdx].exercises[exIdx];
+    showXPToast(`⚡ +${ex.cardio ? 3 : XP_PER_EXERCISE} XP — ${ex.name}`);
+    checkRankUp();
+  }
+  // Check if all done
+  const allDone = DAYS[dayIdx].exercises.every((_,i) => getExDone(currentWeek, dayIdx, i));
+  if (allDone) { setDayDone(currentWeek, dayIdx, true); }
+}
+
+function saveWeight(dayIdx, exIdx, setIdx, val) {
+  setExWeight(currentWeek, dayIdx, exIdx, setIdx, val);
+}
+
+function markDayComplete() {
+  const allDone = DAYS[activeDayIdx].exercises.every((_,i) => getExDone(currentWeek, activeDayIdx, i));
+  if (!allDone) {
+    // Mark all done
+    DAYS[activeDayIdx].exercises.forEach((_,i) => {
+      setExDone(currentWeek, activeDayIdx, i, true);
+    });
+    setDayDone(currentWeek, activeDayIdx, true);
+    const xp = DAYS[activeDayIdx].exercises.filter(e => !e.cardio).length * XP_PER_EXERCISE;
+    showXPToast(`🔥 QUEST CLEAR! +${xp} XP`);
+    checkRankUp();
+    refreshWorkout();
+  }
+}
+
+// ── NUTRITION ──
+function refreshNutrition() {
+  // Day selector
+  const daySel = document.getElementById('nutritionDaySel');
+  const dayNames = ['MON','TUE','WED','THU','FRI','SAT','SUN'];
+  daySel.innerHTML = dayNames.map((d,i) =>
+    `<button class="week-sel-btn${i===nutritionDayIdx?' active':''}" onclick="selectNutritionDay(${i})">${d}</button>`
+  ).join('');
+
+  const plan = MEAL_PLAN[nutritionDayIdx];
+  if (!plan) return;
+
+  // Calculate totals
+  const allItems = [...plan.breakfast, ...plan.snack, ...plan.dinner, plan.preGym];
+  let totalCal = 0, totalP = 0, totalC = 0, totalF = 0;
+  allItems.forEach(it => {
+    totalCal += it.cal; totalP += it.protein; totalC += it.carbs; totalF += it.fat;
+  });
+
+  document.getElementById('ringCalTotal').textContent = totalCal;
+  document.getElementById('legendProtein').textContent = totalP + 'g';
+  document.getElementById('legendCarbs').textContent = totalC + 'g';
+  document.getElementById('legendFat').textContent = totalF + 'g';
+
+  // Rings
+  const pPct = Math.min(totalP / MACRO_GOALS.protein, 1);
+  const cPct = Math.min(totalC / MACRO_GOALS.carbs, 1);
+  const fPct = Math.min(totalF / MACRO_GOALS.fat, 1);
+  document.getElementById('ringProtein').style.strokeDashoffset = 213 * (1 - pPct);
+  document.getElementById('ringCarbs').style.strokeDashoffset = 276 * (1 - cPct);
+  document.getElementById('ringFat').style.strokeDashoffset = 339 * (1 - fPct);
+
+  // Targets
+  document.getElementById('proteinTarget').textContent = `${totalP} / ${MACRO_GOALS.protein}g`;
+  document.getElementById('carbsTarget').textContent = `${totalC} / ${MACRO_GOALS.carbs}g`;
+  document.getElementById('fatTarget').textContent = `${totalF} / ${MACRO_GOALS.fat}g`;
+  document.getElementById('proteinBar').style.width = (pPct*100) + '%';
+  document.getElementById('carbsBar').style.width = (cPct*100) + '%';
+  document.getElementById('fatBar').style.width = (fPct*100) + '%';
+
+  // Meal cards
+  function renderMeal(elId, title, items) {
+    const el = document.getElementById(elId);
+    if (!el) return;
+    const arr = Array.isArray(items) ? items : [items];
+    el.innerHTML = `<div class="meal-time">${title}</div>
+      <div class="meal-items">
+        ${arr.map(it => `<div class="meal-item">
+          <div class="meal-item-name">${it.name}</div>
+          <div class="meal-item-cal">${it.cal} kcal · P:${it.protein}g C:${it.carbs}g F:${it.fat}g</div>
+        </div>`).join('')}
+      </div>`;
+  }
+  renderMeal('mealPreGym', '⚡ PRE-GYM', plan.preGym);
+  renderMeal('mealBreakfast', '🌅 BREAKFAST', plan.breakfast);
+  renderMeal('mealSnack', '🥜 SNACK', plan.snack);
+  renderMeal('mealDinner', '🌙 DINNER', plan.dinner);
+}
+
+function selectNutritionDay(idx) {
+  nutritionDayIdx = idx;
+  refreshNutrition();
+}
+
+// ── WARMUP ──
+function refreshWarmup() {
+  const cats = Object.keys(WARMUP_DATA);
+  const catBtns = document.getElementById('warmupCatBtns');
+  catBtns.innerHTML = cats.map(cat =>
+    `<button class="warmup-cat-btn${warmupActiveCat===cat?' active':''}" onclick="selectWarmupCat('${cat}')">${WARMUP_DATA[cat].icon} ${cat}</button>`
+  ).join('');
+
+  if (!warmupActiveCat) { warmupActiveCat = cats[0]; }
+
+  const data = WARMUP_DATA[warmupActiveCat];
+  document.getElementById('warmupCatTitle').textContent = warmupActiveCat.toUpperCase() + ' WARMUP';
+  document.getElementById('warmupExCards').innerHTML = data.exercises.map((ex, i) =>
+    `<div class="warmup-ex-card">
+      <div class="warmup-ex-num">${i+1}</div>
+      <div>
+        <div class="warmup-ex-name">${ex.name}</div>
+        <div class="warmup-ex-sets">${ex.sets}</div>
+        <div class="warmup-ex-tip">${ex.tip}</div>
+      </div>
+    </div>`
+  ).join('');
+
+  document.getElementById('warmupTipText').textContent =
+    `Warming up your ${warmupActiveCat.toLowerCase()} muscles is essential for injury prevention and maximizing performance. Focus on blood flow and range of motion before heavy lifts. Complete these ${data.exercises.length} exercises in order.`;
+
+  // re-render cat buttons
+  document.querySelectorAll('.warmup-cat-btn').forEach(b => b.classList.toggle('active', b.textContent.trim().endsWith(warmupActiveCat)));
+}
+
+function selectWarmupCat(cat) {
+  warmupActiveCat = cat;
+  refreshWarmup();
+}
+
+// ── HIIT ──
+let selectedHiitProgram = null;
+
+function refreshHiit() {
+  const container = document.getElementById('hiitProgramCards');
+  container.innerHTML = HIIT_PROGRAMS.map((p, i) =>
+    `<div class="glass hiit-program-card${selectedHiitProgram===i?' active':''}"
+      style="--card-color:${p.color+'11'};--card-border:${p.color+'66'}"
+      onclick="selectHiitProgram(${i})">
+      <span class="hiit-program-icon">${p.icon}</span>
+      <div class="hiit-program-name" style="color:${p.color}">${p.name}</div>
+      <div class="hiit-program-tagline">${p.tagline}</div>
+      <div class="hiit-program-stats">
+        <span class="hiit-stat-chip">${p.workSecs}s WORK</span>
+        <span class="hiit-stat-chip">${p.restSecs}s REST</span>
+        <span class="hiit-stat-chip">${p.rounds} ROUNDS</span>
+      </div>
+    </div>`
+  ).join('');
+}
+
+function selectHiitProgram(idx) {
+  selectedHiitProgram = idx;
+  hiitActiveProgram = HIIT_PROGRAMS[idx];
+  resetHiit();
+  refreshHiit();
+  document.getElementById('hiitCurrentEx').textContent = hiitActiveProgram.exercises[0].name;
+  document.getElementById('hiitRoundInfo').textContent = `ROUND 0 / ${hiitActiveProgram.rounds}`;
+  document.getElementById('timerSecs').textContent = String(hiitActiveProgram.workSecs).padStart(2, '0');
+}
+
+function toggleHiit() {
+  if (!hiitActiveProgram) return;
+  if (hiitRunning) {
+    clearInterval(hiitInterval);
+    hiitRunning = false;
+    document.getElementById('hiitStartBtn').textContent = 'RESUME';
+  } else {
+    hiitRunning = true;
+    document.getElementById('hiitStartBtn').textContent = 'PAUSE';
+    if (hiitSecs === 0) {
+      hiitSecs = hiitActiveProgram.workSecs;
+      hiitPhase = 'work';
+      hiitRound = 1;
+      hiitExIdx = 0;
+      updateHiitDisplay();
+    }
+    hiitInterval = setInterval(tickHiit, 1000);
+  }
+}
+
+function tickHiit() {
+  hiitSecs--;
+  if (hiitSecs <= 0) {
+    if (hiitPhase === 'work') {
+      hiitPhase = 'rest';
+      hiitSecs = hiitActiveProgram.restSecs;
+    } else {
+      hiitPhase = 'work';
+      hiitExIdx = (hiitExIdx + 1) % hiitActiveProgram.exercises.length;
+      if (hiitExIdx === 0) hiitRound++;
+      if (hiitRound > hiitActiveProgram.rounds) {
+        clearInterval(hiitInterval); hiitRunning = false;
+        document.getElementById('hiitStartBtn').textContent = 'COMPLETE!';
+        showXPToast(`🔥 HIIT COMPLETE! +30 XP`);
+        return;
+      }
+      hiitSecs = hiitActiveProgram.workSecs;
+    }
+  }
+  updateHiitDisplay();
+}
+
+function updateHiitDisplay() {
+  const p = hiitActiveProgram;
+  const total = hiitPhase === 'work' ? p.workSecs : p.restSecs;
+  const progress = hiitSecs / total;
+  const circumference = 439.8;
+  document.getElementById('timerRingEl').style.strokeDashoffset = circumference * (1 - progress);
+  document.getElementById('timerRingEl').style.stroke = hiitPhase === 'work' ? 'var(--neon-purple)' : 'var(--neon-cyan)';
+  document.getElementById('timerSecs').textContent = String(hiitSecs).padStart(2, '0');
+  document.getElementById('timerPhase').textContent = hiitPhase === 'work' ? 'WORK' : 'REST';
+  document.getElementById('hiitCurrentEx').textContent = p.exercises[hiitExIdx]?.name || '';
+  document.getElementById('hiitRoundInfo').textContent = `ROUND ${hiitRound} / ${p.rounds}`;
+}
+
+function resetHiit() {
+  clearInterval(hiitInterval); hiitRunning = false; hiitSecs = 0; hiitPhase = 'work'; hiitRound = 0; hiitExIdx = 0;
+  document.getElementById('timerSecs').textContent = '00';
+  document.getElementById('timerPhase').textContent = 'READY';
+  document.getElementById('timerRingEl').style.strokeDashoffset = '0';
+  document.getElementById('hiitStartBtn').textContent = 'START';
+  if (hiitActiveProgram) {
+    document.getElementById('timerSecs').textContent = String(hiitActiveProgram.workSecs).padStart(2,'0');
+  }
+}
+
+// ── DUNGEON MAP ──
+function refreshMap() {
+  const mapEl = document.getElementById('dungeonMapGrid');
+  let html = '';
+  const phases = ['Foundation', 'Build', 'Accumulate', 'Intensify', 'Peak', 'Deload & Test'];
+  const phasePairs = [[1,2],[3,4],[5,6],[7,8],[9,10],[11,12]];
+
+  phasePairs.forEach((pair, pi) => {
+    html += `<div class="map-phase">
+      <div class="map-phase-label">${phases[pi]}</div>
+      <div class="map-weeks-row">`;
+    pair.forEach(w => {
+      let completedDays = 0;
+      for (let d = 0; d < 7; d++) if (getDayDone(w, d)) completedDays++;
+      const cls = completedDays === 7 ? 'completed' : (w === currentWeek ? 'active' : (w < currentWeek ? 'completed' : 'locked'));
+      const statusIcon = cls === 'completed' ? '✓' : (cls === 'active' ? '⚡' : '🔒');
+      const barWidth = cls === 'completed' ? 100 : (cls === 'active' ? Math.round((completedDays/7)*100) : 0);
+      html += `<div class="map-node ${cls}" onclick="jumpToWeek(${w})">
+        <div class="map-node-top">
+          <div class="map-node-week">WEEK ${w}</div>
+          <div class="map-node-status">${statusIcon}</div>
+        </div>
+        <div class="map-node-phase">${PHASE_NAMES[w]}</div>
+        <div class="map-node-tip">${PHASES[w] || 'Complete all 7 days.'}</div>
+        <div class="map-node-progress">
+          <div style="font-family:var(--font-display);font-size:9px;color:var(--text-muted);margin-bottom:6px;display:flex;justify-content:space-between">
+            <span>${completedDays}/7 DAYS</span><span>${barWidth}%</span>
+          </div>
+          <div class="map-node-bar-track">
+            <div class="map-node-bar-fill" style="width:${barWidth}%"></div>
+          </div>
+        </div>
+      </div>`;
+    });
+    html += '</div></div>';
+  });
+  mapEl.innerHTML = html;
+}
+
+function jumpToWeek(w) {
+  currentWeek = w;
+  localStorage.setItem('hs_week', w);
+  showPage('workout');
+}
+
+// ── MUSCLE MAP ──
+function selectMuscle(muscle, view) {
+  activeMuscle = muscle;
+
+  // Highlight SVGs
+  document.querySelectorAll('.muscle-group').forEach(g => {
+    g.classList.remove('active','secondary');
+    if (g.dataset.muscle === muscle) g.classList.add('active');
+    else if ((muscle === 'Back' && g.dataset.muscle === 'Shoulders') ||
+             (muscle === 'Chest' && g.dataset.muscle === 'Shoulders')) {
+      g.classList.add('secondary');
+    }
+  });
+
+  // Info panel
+  const panel = document.getElementById('muscleInfoPanel');
+
+  // Find exercises for this muscle
+  const exercises = [];
+  DAYS.forEach((day, di) => {
+    day.exercises.forEach((ex, ei) => {
+      const m = MUSCLE_MAP[ex.name];
+      if (m && (m === muscle || m.includes(muscle) || muscle.includes(m))) {
+        if (!exercises.find(e => e.name === ex.name)) exercises.push(ex);
+      }
+    });
+  });
+
+  const muscleColors = {
+    'Chest':'#60a5fa','Back':'#a78bfa','Shoulders':'#fbbf24','Biceps':'#34d399',
+    'Triceps':'#f87171','Legs':'#c8ff00','Hamstrings':'#fb923c','Glutes':'#e879f9',
+    'Calves':'#67e8f9','Core':'#4ade80','Forearms':'#94a3b8'
+  };
+  const color = muscleColors[muscle] || 'var(--neon-cyan)';
+
+  panel.innerHTML = `<div class="glass muscle-detail-card">
+    <div class="muscle-detail-name" style="color:${color}">${muscle.toUpperCase()}</div>
+    <div style="font-size:12px;color:var(--text-muted);margin-bottom:16px">${exercises.length} exercises in your program target this muscle</div>
+    <div class="muscle-exercises">
+      ${exercises.slice(0,8).map(ex => `
+        <div class="muscle-ex-row" onclick="goToExercise('${ex.name}')">
+          <div class="muscle-ex-name">${ex.name}</div>
+          <div class="muscle-ex-sets">${ex.sets}</div>
+        </div>
+      `).join('')}
     </div>
-    <div class="dc-system-line">◈ SYSTEM MESSAGE ◈</div>
-    <div class="dc-title" id="workout-popup-title">DUNGEON CLEARED</div>
-    <div class="dc-sub" id="workout-popup-sub">Quest complete.</div>
-    <div class="dc-stats" id="workout-popup-stats"></div>
-    <button class="dc-btn" onclick="closeWorkoutPopup()">ARISE ⚔</button>
   </div>
-</div>
+  <div class="glass" style="padding:20px;margin-top:0">
+    <div class="section-label">FORM GUIDE</div>
+    ${exercises[0] && EX_FORM_TIPS[exercises[0].name] ? `
+      <div style="font-size:12px;color:var(--neon-cyan);margin-bottom:8px">${EX_FORM_TIPS[exercises[0].name].muscles}</div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        ${EX_FORM_TIPS[exercises[0].name].cues.slice(0,4).map(c => `
+          <div style="font-size:12px;color:var(--text-muted);padding-left:12px;border-left:2px solid ${color};line-height:1.4">${c}</div>
+        `).join('')}
+      </div>
+    ` : '<div style="font-size:12px;color:var(--text-muted)">No form tips available</div>'}
+  </div>`;
+}
 
-<!-- TIMER FAB -->
-<div class="timer-fab" id="timer-fab">
-  <div class="timer-panel" id="timer-panel">
-    <div class="hiit-status" id="hiit-status" style="display:none"></div>
-    <div class="timer-display" id="timer-display">1:30</div>
-    <div class="timer-label" id="timer-label">Rest Timer</div>
-    <div class="timer-presets">
-      <button class="timer-preset" onclick="setTimerPreset(60,'60s Rest')">60s</button>
-      <button class="timer-preset active" onclick="setTimerPreset(90,'90s Rest')">90s</button>
-      <button class="timer-preset" onclick="setTimerPreset(120,'120s Rest')">120s</button>
-      <button class="timer-preset" onclick="startHIIT()">HIIT</button>
-    </div>
-    <div class="timer-btns">
-      <button class="timer-btn" id="timer-start-btn" onclick="timerStartStop()">▶ Start</button>
-      <button class="timer-btn secondary" onclick="timerReset()">Reset</button>
-    </div>
-  </div>
-  <button class="timer-toggle-btn" onclick="toggleTimer()" title="Timer">⏱</button>
-</div>
+function goToExercise(name) {
+  // Find which day has this exercise
+  for (let d = 0; d < DAYS.length; d++) {
+    for (let e = 0; e < DAYS[d].exercises.length; e++) {
+      if (DAYS[d].exercises[e].name === name) {
+        activeDayIdx = d;
+        showPage('workout');
+        return;
+      }
+    }
+  }
+}
 
-<!-- TOAST -->
-<div class="toast" id="toast">
-  <div class="toast-icon" id="toast-icon">◈</div>
-  <div class="toast-msg" id="toast-msg"></div>
-</div>
+// ── INIT ──
+function init() {
+  setUnit(currentUnit);
+  refreshHome();
+  refreshWarmup();
+  refreshHiit();
+}
 
-<script src="js/data.js"></script>
-<script src="js/app.js"></script>
+init();
+</script>
 </body>
 </html>
