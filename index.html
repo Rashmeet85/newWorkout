@@ -2,174 +2,254 @@
 <html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Hunter's System">
-  <meta name="theme-color" content="#05050f" id="meta-theme">
+  <meta name="theme-color" content="#03030a" id="meta-theme">
   <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
   <link rel="apple-touch-icon" href="icon-192.png">
   <title>Hunter's System</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@400;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Share+Tech+Mono&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 
-<!-- ONBOARDING OVERLAY (first run) -->
-<div class="onboard-overlay" id="onboard-overlay">
-  <div class="onboard-box">
-    <div class="onboard-system-eye"></div>
-    <div class="onboard-msg" id="onboard-msg">The System has detected a new hunter.</div>
-    <div class="onboard-field-wrap" id="onboard-name-wrap">
-      <div class="onboard-prompt">State your name, hunter.</div>
-      <input class="onboard-inp" id="onboard-name-inp" type="text" placeholder="Enter your name..." maxlength="20" autocomplete="off">
-      <button class="onboard-btn" onclick="onboardConfirm()">I WILL RISE</button>
+<!-- ═══ SYSTEM BOOT OVERLAY (onboarding) ═══ -->
+<div id="boot-screen" class="boot-screen">
+  <div class="boot-lines" id="boot-lines"></div>
+  <div class="boot-center" id="boot-center" style="display:none">
+    <div class="boot-eye">
+      <div class="boot-eye-ring boot-eye-ring-1"></div>
+      <div class="boot-eye-ring boot-eye-ring-2"></div>
+      <div class="boot-eye-core"></div>
+    </div>
+    <div class="boot-system-title">◈ THE SYSTEM ◈</div>
+    <div class="boot-message" id="boot-message">A new hunter has been detected.</div>
+    <div class="boot-name-prompt" id="boot-name-prompt" style="display:none">
+      <div class="boot-prompt-line">ENTER DESIGNATION:</div>
+      <input class="boot-name-inp" id="boot-name-inp" type="text" maxlength="20"
+        placeholder="YOUR NAME" autocomplete="off" autocorrect="off"
+        onkeydown="if(event.key==='Enter')bootConfirm()">
+      <button class="boot-confirm-btn" onclick="bootConfirm()">
+        <span>ARISE</span>
+        <div class="boot-btn-glow"></div>
+      </button>
     </div>
   </div>
 </div>
 
-<!-- RANK-UP CEREMONY OVERLAY -->
-<div class="rankup-overlay" id="rankup-overlay">
-  <div class="rankup-box">
+<!-- ═══ RANK-UP CEREMONY ═══ -->
+<div id="rankup-overlay" class="rankup-overlay">
+  <div class="rankup-content">
     <div class="rankup-particles" id="rankup-particles"></div>
-    <div class="rankup-eye"></div>
-    <div class="rankup-label">RANK UP</div>
-    <div class="rankup-rank" id="rankup-rank-display">C RANK</div>
-    <div class="rankup-msg" id="rankup-msg">The System acknowledges your growth.</div>
-    <button class="rankup-close" onclick="closeRankUp()">ACKNOWLEDGE</button>
+    <div class="rankup-symbol" id="rankup-symbol">◈</div>
+    <div class="rankup-eyeline">THE SYSTEM SPEAKS</div>
+    <div class="rankup-new-rank" id="rankup-new-rank">C-RANK</div>
+    <div class="rankup-msg" id="rankup-msg">Your power has grown.</div>
+    <button class="rankup-ack" onclick="closeRankUp()">ACKNOWLEDGE</button>
   </div>
 </div>
 
-<!-- DRAWER OVERLAY -->
-<div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer()"></div>
-
-<!-- SIDE DRAWER -->
-<nav class="side-drawer" id="side-drawer">
-  <div class="drawer-header">
-    <div class="drawer-logo">HUNTER'S <span>SYSTEM</span></div>
-    <button class="drawer-close" onclick="closeDrawer()">✕</button>
+<!-- ═══ SIDE PANEL (drawer) ═══ -->
+<div class="panel-overlay" id="panel-overlay" onclick="closePanel()"></div>
+<aside class="side-panel" id="side-panel">
+  <div class="panel-header">
+    <div class="panel-logo">HUNTER'S<br><span>SYSTEM</span></div>
+    <button class="panel-close" onclick="closePanel()">✕</button>
   </div>
-  <div class="drawer-hunter-info" id="drawer-hunter-info">
-    <div class="dhi-rank" id="drawer-rank-badge">E</div>
-    <div class="dhi-text">
-      <div class="dhi-name" id="drawer-hunter-name">Hunter</div>
-      <div class="dhi-streak">🔥 <span id="drawer-streak-num">0</span> day streak</div>
+  <div class="panel-hunter" id="panel-hunter">
+    <div class="panel-rank-badge" id="panel-rank-badge">E</div>
+    <div class="panel-hunter-info">
+      <div class="panel-hunter-name" id="panel-hunter-name">HUNTER</div>
+      <div class="panel-hunter-streak">🔥 <span id="drawer-streak-num">0</span> DAY STREAK</div>
     </div>
   </div>
-  <div class="drawer-nav">
-    <button class="drawer-btn active" id="dnav-home" onclick="showPage('home');closeDrawer()">⚔️ <span>Dashboard</span></button>
-    <button class="drawer-btn" id="dnav-character" onclick="showPage('character');closeDrawer()">🧬 <span>Character</span></button>
-    <button class="drawer-btn" id="dnav-nutr" onclick="showPage('nutr');closeDrawer()">🥗 <span>Nutrition</span></button>
-    <button class="drawer-btn" id="dnav-warmup" onclick="showPage('warmup');closeDrawer()">🔥 <span>Warmup</span></button>
-    <button class="drawer-btn" id="dnav-hiit" onclick="showPage('hiit');closeDrawer()">⚡ <span>HIIT</span></button>
-    <button class="drawer-btn" id="dnav-vol" onclick="showPage('vol');closeDrawer()">📊 <span>Volume</span></button>
-    <button class="drawer-btn" id="dnav-cal" onclick="showPage('cal');closeDrawer()">📅 <span>Calendar</span></button>
-    <button class="drawer-btn" id="dnav-goals" onclick="showPage('goals');closeDrawer()">🎯 <span>Quests</span></button>
-    <button class="drawer-btn" id="dnav-pr" onclick="showPage('pr');closeDrawer()">💪 <span>PRs</span></button>
-    <button class="drawer-btn" id="dnav-bmi" onclick="showPage('bmi');closeDrawer()">⚖️ <span>BMI &amp; Calories</span></button>
-    <button class="drawer-btn" id="dnav-customize" onclick="showPage('customize');closeDrawer()">⚙️ <span>Customize</span></button>
-    <button class="drawer-btn" id="dnav-week" onclick="showPage('week');closeDrawer()" style="display:none">📋 <span>Week View</span></button>
+  <nav class="panel-nav">
+    <button class="pnav-btn active" id="dnav-home" onclick="showPage('home');closePanel()">
+      <span class="pnav-icon">⚔</span><span class="pnav-label">Dashboard</span>
+    </button>
+    <button class="pnav-btn" id="dnav-character" onclick="showPage('character');closePanel()">
+      <span class="pnav-icon">◈</span><span class="pnav-label">Character</span>
+    </button>
+    <button class="pnav-btn" id="dnav-nutr" onclick="showPage('nutr');closePanel()">
+      <span class="pnav-icon">⬡</span><span class="pnav-label">Nutrition</span>
+    </button>
+    <button class="pnav-btn" id="dnav-warmup" onclick="showPage('warmup');closePanel()">
+      <span class="pnav-icon">▲</span><span class="pnav-label">Warmup</span>
+    </button>
+    <button class="pnav-btn" id="dnav-hiit" onclick="showPage('hiit');closePanel()">
+      <span class="pnav-icon">⚡</span><span class="pnav-label">HIIT</span>
+    </button>
+    <button class="pnav-btn" id="dnav-vol" onclick="showPage('vol');closePanel()">
+      <span class="pnav-icon">◉</span><span class="pnav-label">Volume</span>
+    </button>
+    <button class="pnav-btn" id="dnav-cal" onclick="showPage('cal');closePanel()">
+      <span class="pnav-icon">▦</span><span class="pnav-label">Calendar</span>
+    </button>
+    <button class="pnav-btn" id="dnav-goals" onclick="showPage('goals');closePanel()">
+      <span class="pnav-icon">◆</span><span class="pnav-label">Quests</span>
+    </button>
+    <button class="pnav-btn" id="dnav-pr" onclick="showPage('pr');closePanel()">
+      <span class="pnav-icon">★</span><span class="pnav-label">Records</span>
+    </button>
+    <button class="pnav-btn" id="dnav-bmi" onclick="showPage('bmi');closePanel()">
+      <span class="pnav-icon">⬟</span><span class="pnav-label">BMI</span>
+    </button>
+    <button class="pnav-btn" id="dnav-customize" onclick="showPage('customize');closePanel()">
+      <span class="pnav-icon">⚙</span><span class="pnav-label">Customize</span>
+    </button>
+    <button class="pnav-btn" id="dnav-week" style="display:none" onclick="showPage('week');closePanel()">
+      <span class="pnav-icon">▣</span><span class="pnav-label">Dungeon</span>
+    </button>
+  </nav>
+  <div class="panel-footer">
+    <button class="panel-theme-btn" onclick="toggleTheme()" id="theme-btn-drawer">◐ Toggle Mode</button>
   </div>
-  <div class="drawer-footer">
-    <button class="drawer-theme-btn" onclick="toggleTheme()" id="theme-btn-drawer">🌙 Shadow / Light Mode</button>
-  </div>
-</nav>
+</aside>
 
-<!-- TOP NAV -->
-<nav class="nav" id="main-nav">
-  <button class="nav-hamburger" onclick="openDrawer()" title="Menu">☰</button>
-  <div class="nav-logo">HUNTER'S SYSTEM</div>
-  <button class="nav-btn active" id="nav-home" onclick="showPage('home')">⚔️ <span>Home</span></button>
-  <button class="nav-btn" id="nav-character" onclick="showPage('character')">🧬 <span>Character</span></button>
-  <button class="nav-btn" id="nav-nutr" onclick="showPage('nutr')">🥗 <span>Nutrition</span></button>
-  <button class="nav-btn" id="nav-warmup" onclick="showPage('warmup')">🔥 <span>Warmup</span></button>
-  <button class="nav-btn" id="nav-hiit" onclick="showPage('hiit')">⚡ <span>HIIT</span></button>
-  <button class="nav-btn" id="nav-vol" onclick="showPage('vol')">📊 <span>Vol</span></button>
-  <button class="nav-btn nav-hidden" id="nav-week">📋</button>
-  <button class="nav-btn nav-hidden" id="nav-cal">📅</button>
-  <button class="nav-btn nav-hidden" id="nav-goals">🎯</button>
-  <button class="nav-btn nav-hidden" id="nav-pr">💪</button>
-  <button class="nav-btn nav-hidden" id="nav-bmi">⚖️</button>
-  <button class="nav-btn nav-hidden" id="nav-customize">⚙️</button>
-  <button class="nav-btn nav-hidden" id="nav-character-nav">🧬</button>
-  <div class="nav-spacer"></div>
-  <div class="nav-right">
-    <div class="nav-rank-badge" id="nav-rank-badge">E</div>
-    <div class="nav-streak">🔥 <span id="streak-num">0</span></div>
-    <button class="nav-theme-btn" onclick="toggleTheme()" id="theme-btn" title="Toggle theme">🌙</button>
+<!-- ═══ TOP BAR ═══ -->
+<header class="topbar" id="topbar">
+  <button class="topbar-menu" onclick="openPanel()">☰</button>
+  <div class="topbar-brand">
+    <span class="topbar-diamond">◈</span>
+    <span class="topbar-title">HUNTER'S SYSTEM</span>
   </div>
-</nav>
+  <nav class="topbar-nav" id="topbar-nav">
+    <button class="tnav active" id="nav-home" onclick="showPage('home')">Home</button>
+    <button class="tnav" id="nav-character" onclick="showPage('character')">Character</button>
+    <button class="tnav" id="nav-nutr" onclick="showPage('nutr')">Nutrition</button>
+    <button class="tnav" id="nav-warmup" onclick="showPage('warmup')">Warmup</button>
+    <button class="tnav" id="nav-hiit" onclick="showPage('hiit')">HIIT</button>
+    <button class="tnav" id="nav-vol" onclick="showPage('vol')">Volume</button>
+    <button class="tnav tnav-hidden" id="nav-week"></button>
+    <button class="tnav tnav-hidden" id="nav-cal"></button>
+    <button class="tnav tnav-hidden" id="nav-goals"></button>
+    <button class="tnav tnav-hidden" id="nav-pr"></button>
+    <button class="tnav tnav-hidden" id="nav-bmi"></button>
+    <button class="tnav tnav-hidden" id="nav-customize"></button>
+  </nav>
+  <div class="topbar-right">
+    <div class="topbar-rank" id="topbar-rank">E</div>
+    <div class="topbar-streak">🔥<span id="streak-num">0</span></div>
+    <button class="topbar-theme" onclick="toggleTheme()" id="theme-btn">◐</button>
+  </div>
+</header>
 
-<!-- ═══════════════════════════════════════════
-     HOME / DASHBOARD PAGE
-═══════════════════════════════════════════ -->
+<!-- ════════════════════════════════════════
+     PAGE: HOME / DASHBOARD
+════════════════════════════════════════ -->
 <div id="page-home" class="page active">
 
-  <!-- SYSTEM QUEST BANNER -->
+  <!-- QUEST ALERT BANNER -->
   <div id="today-banner-wrap"></div>
 
-  <!-- HERO — Hunter Identity Block -->
-  <div class="rpg-hero" id="rpg-hero">
-    <div class="rpg-hero-bg"></div>
-    <div class="rpg-hero-scanlines"></div>
-    <div class="rpg-hero-inner">
-      <div class="rpg-hero-system-tag">◈ THE SYSTEM ◈</div>
-      <div class="rpg-hero-greeting">
-        <span id="rpg-greeting-verb">ARISE,</span>
-        <span class="rpg-hero-name" id="rpg-hero-name">HUNTER</span>
+  <!-- HUNTER IDENTITY PANEL -->
+  <section class="identity-panel">
+    <div class="id-panel-bg" id="id-panel-bg"></div>
+    <div class="id-panel-scan"></div>
+    <div class="id-panel-inner">
+      <div class="id-header">
+        <div class="id-system-tag">◈ SYSTEM INTERFACE ◈</div>
+        <div class="id-status-dot"></div>
       </div>
-      <div class="rpg-hero-rank-row">
-        <div class="rpg-rank-gem" id="rpg-rank-gem">
-          <div class="rpg-rank-letter" id="rpg-rank-letter">E</div>
+      <div class="id-body">
+        <div class="id-portrait-col">
+          <div class="id-portrait-frame" id="id-portrait-frame">
+            <img class="id-portrait" id="id-portrait" src="" alt="">
+            <div class="id-portrait-scanline"></div>
+            <div class="id-rank-stamp" id="id-rank-stamp">E</div>
+          </div>
         </div>
-        <div class="rpg-rank-info">
-          <div class="rpg-rank-title" id="rpg-rank-title">E-RANK HUNTER</div>
-          <div class="rpg-rank-sub" id="rpg-rank-sub">The journey begins</div>
-        </div>
-      </div>
-      <!-- XP Bar -->
-      <div class="rpg-xp-wrap">
-        <div class="rpg-xp-label">
-          <span>XP</span>
-          <span id="rpg-xp-text">0 / 100</span>
-        </div>
-        <div class="rpg-xp-track">
-          <div class="rpg-xp-fill" id="rpg-xp-fill" style="width:0%"></div>
-          <div class="rpg-xp-glow" id="rpg-xp-glow"></div>
+        <div class="id-info-col">
+          <div class="id-name" id="id-name">HUNTER</div>
+          <div class="id-rank-full" id="id-rank-full">E-RANK HUNTER</div>
+          <div class="id-rank-msg" id="id-rank-msg">The journey begins.</div>
+          <div class="id-xp-section">
+            <div class="id-xp-row">
+              <span class="id-xp-label">HUNTER XP</span>
+              <span class="id-xp-nums" id="id-xp-nums">0 / 100</span>
+            </div>
+            <div class="id-xp-bar">
+              <div class="id-xp-fill" id="id-xp-fill" style="width:0%"></div>
+              <div class="id-xp-pulse" id="id-xp-pulse"></div>
+            </div>
+          </div>
+          <div class="id-quick-stats">
+            <div class="id-qstat"><span class="id-qstat-v" id="id-qs-weeks">0</span><span class="id-qstat-l">WEEKS</span></div>
+            <div class="id-qstat-div"></div>
+            <div class="id-qstat"><span class="id-qstat-v" id="id-qs-ex">0</span><span class="id-qstat-l">EXERCISES</span></div>
+            <div class="id-qstat-div"></div>
+            <div class="id-qstat"><span class="id-qstat-v" id="id-qs-pct">0%</span><span class="id-qstat-l">COMPLETE</span></div>
+          </div>
         </div>
       </div>
     </div>
-  </div>
+  </section>
 
-  <!-- STAT STRIP -->
-  <div class="stat-strip">
-    <div class="stat-card c-green"><div class="stat-icon">⚔️</div><div class="stat-val" id="stat-wks">0</div><div class="stat-label">Weeks Done</div></div>
-    <div class="stat-card c-blue"><div class="stat-icon">✅</div><div class="stat-val" id="stat-ex">0</div><div class="stat-label">Exercises</div></div>
-    <div class="stat-card c-gold"><div class="stat-icon">🎯</div><div class="stat-val" id="stat-goals-cnt">0</div><div class="stat-label">Quests Done</div></div>
-    <div class="stat-card c-purple"><div class="stat-icon">📈</div><div class="stat-val" id="stat-pct">0%</div><div class="stat-label">Complete</div></div>
-  </div>
-
-  <!-- DUNGEON PROGRESS -->
-  <div class="home-section">
-    <div class="section-head"><div class="section-title">◈ Dungeon Progress</div></div>
-    <div class="prog-card">
-      <div class="prog-top">
-        <div><div class="prog-label">12-Week Campaign</div><div class="prog-sub" id="prog-sub">Just getting started</div></div>
-        <div class="prog-pct" id="prog-pct-big">0%</div>
-      </div>
-      <div class="prog-track"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
-      <div class="prog-dots" id="prog-dots"></div>
+  <!-- STATS ROW -->
+  <div class="sys-stats-row">
+    <div class="sys-stat" id="stat-card-wks">
+      <div class="sys-stat-icon">⚔</div>
+      <div class="sys-stat-val" id="stat-wks">0</div>
+      <div class="sys-stat-lbl">Weeks Done</div>
     </div>
+    <div class="sys-stat">
+      <div class="sys-stat-icon">✓</div>
+      <div class="sys-stat-val" id="stat-ex">0</div>
+      <div class="sys-stat-lbl">Exercises</div>
+    </div>
+    <div class="sys-stat">
+      <div class="sys-stat-icon">◆</div>
+      <div class="sys-stat-val" id="stat-goals-cnt">0</div>
+      <div class="sys-stat-lbl">Quests Done</div>
+    </div>
+    <div class="sys-stat">
+      <div class="sys-stat-icon">▲</div>
+      <div class="sys-stat-val" id="stat-pct">0%</div>
+      <div class="sys-stat-lbl">Complete</div>
+    </div>
+  </div>
+
+  <!-- CAMPAIGN PROGRESS -->
+  <div class="sys-section">
+    <div class="sys-section-hd">
+      <div class="sys-section-title">CAMPAIGN PROGRESS</div>
+    </div>
+    <div class="sys-prog-block">
+      <div class="sys-prog-top">
+        <div>
+          <div class="sys-prog-label">12-Week Dungeon Campaign</div>
+          <div class="sys-prog-sub" id="prog-sub">Awaiting orders.</div>
+        </div>
+        <div class="sys-prog-pct" id="prog-pct-big">0%</div>
+      </div>
+      <div class="sys-prog-track">
+        <div class="sys-prog-fill" id="prog-fill" style="width:0%"></div>
+      </div>
+      <div class="sys-prog-weeks" id="prog-dots"></div>
+    </div>
+  </div>
+
+  <!-- 12-WEEK DUNGEON MAP -->
+  <div class="sys-section">
+    <div class="sys-section-hd">
+      <div class="sys-section-title">DUNGEON MAP</div>
+    </div>
+    <div class="dungeon-map" id="weeks-grid"></div>
   </div>
 
   <!-- BODY WEIGHT -->
-  <div class="home-section">
-    <div class="section-head"><div class="section-title">⚖ Body Weight</div><button class="section-action" onclick="showPage('goals')">+ Quest</button></div>
-    <div class="weight-card">
+  <div class="sys-section">
+    <div class="sys-section-hd">
+      <div class="sys-section-title">BODY METRICS</div>
+      <button class="sys-action-btn" onclick="showPage('goals')">+ Quest</button>
+    </div>
+    <div class="sys-weight-block">
       <div class="wstats-row">
         <div class="wstat"><div class="wstat-lbl">Starting</div><div class="wstat-val" id="wt-start">—</div><div class="wstat-sub" id="wt-start-sub">No data</div></div>
         <div class="wstat"><div class="wstat-lbl">Current</div><div class="wstat-val" id="wt-cur">—</div><div class="wstat-sub" id="wt-cur-sub">No data</div></div>
@@ -189,19 +269,15 @@
     </div>
   </div>
 
-  <!-- 12-WEEK DUNGEON MAP -->
-  <div class="home-section">
-    <div class="section-head"><div class="section-title">◈ 12-Week Dungeon Map</div></div>
-    <div class="weeks-grid" id="weeks-grid"></div>
-  </div>
-
-  <!-- DAILY REMINDER -->
-  <div class="home-section" style="padding-bottom:100px">
-    <div class="section-head"><div class="section-title">🔔 System Alert</div></div>
-    <div class="notif-card">
+  <!-- SYSTEM ALERT (notifications) -->
+  <div class="sys-section" style="padding-bottom:100px">
+    <div class="sys-section-hd">
+      <div class="sys-section-title">SYSTEM ALERT</div>
+    </div>
+    <div class="sys-card sys-notif-card">
       <div class="notif-row">
-        <div class="notif-label">Daily Summons<span>Get notified once daily while the app is open</span></div>
-        <label class="notif-toggle" title="Enable daily reminder">
+        <div class="notif-label">Daily Summons<span>Notification when app is open</span></div>
+        <label class="notif-toggle">
           <input type="checkbox" id="notif-toggle-inp" onchange="saveNotifSettings()">
           <span class="notif-slider"></span>
         </label>
@@ -213,152 +289,219 @@
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════
-     CHARACTER PAGE
-═══════════════════════════════════════════ -->
+<!-- ════════════════════════════════════════
+     PAGE: CHARACTER
+════════════════════════════════════════ -->
 <div id="page-character" class="page">
-  <div class="char-page-wrap">
-
-    <!-- Character Display -->
-    <div class="char-display-area" id="char-display-area">
-      <div class="char-bg-dungeon"></div>
-      <div class="char-portrait-wrap">
-        <img class="char-portrait-img" id="char-portrait-img" src="" alt="Hunter">
-        <div class="char-portrait-glow" id="char-portrait-glow"></div>
-      </div>
-      <div class="char-rank-overlay">
-        <div class="char-rank-big" id="char-rank-big">E</div>
-        <div class="char-rank-name" id="char-rank-name">E-RANK HUNTER</div>
-        <div class="char-hunter-name-display" id="char-hunter-name-display">Hunter</div>
-      </div>
+  <div class="char-page">
+    <!-- Full portrait backdrop -->
+    <div class="char-backdrop" id="char-backdrop">
+      <img class="char-backdrop-img" id="char-portrait-img" src="" alt="">
+      <div class="char-backdrop-fade"></div>
+      <div class="char-backdrop-scan"></div>
     </div>
 
-    <!-- XP Progress -->
-    <div class="char-section">
-      <div class="char-xp-block">
-        <div class="char-xp-header">
-          <span class="char-xp-label">HUNTER XP</span>
-          <span class="char-xp-val" id="char-xp-val">0 / 100 XP</span>
+    <!-- Hunter identity card overlay -->
+    <div class="char-identity">
+      <div class="char-rank-display" id="char-rank-big">E</div>
+      <div class="char-rank-title" id="char-rank-name">E-RANK HUNTER</div>
+      <div class="char-name-display" id="char-hunter-name-display">HUNTER</div>
+    </div>
+
+    <!-- Stats beneath -->
+    <div class="char-stats-area">
+
+      <!-- XP -->
+      <div class="char-block">
+        <div class="char-block-title">EXPERIENCE</div>
+        <div class="char-xp-wrap">
+          <div class="char-xp-top">
+            <span class="char-xp-label">TOTAL XP</span>
+            <span class="char-xp-val" id="char-xp-val">0 XP</span>
+          </div>
+          <div class="char-xp-track">
+            <div class="char-xp-fill" id="char-xp-fill" style="width:0%"></div>
+          </div>
+          <div class="char-xp-next" id="char-next-rank">Next rank unlocks at 100 XP</div>
         </div>
-        <div class="char-xp-track">
-          <div class="char-xp-fill" id="char-xp-fill" style="width:0%"></div>
-        </div>
-        <div class="char-next-rank" id="char-next-rank">Next rank: D-Rank</div>
+      </div>
+
+      <!-- Rank Journey -->
+      <div class="char-block">
+        <div class="char-block-title">RANK ASCENSION</div>
+        <div class="rank-ascension" id="rank-journey-strip"></div>
+      </div>
+
+      <!-- Stat Panel (STR / END / AGI / WIL) -->
+      <div class="char-block">
+        <div class="char-block-title">STAT PANEL</div>
+        <div class="rpg-stat-grid" id="stat-panel-grid"></div>
+      </div>
+
+      <!-- Shadow Army -->
+      <div class="char-block">
+        <div class="char-block-title">SHADOW ARMY</div>
+        <div class="char-block-sub">Unlock soldiers by logging PRs</div>
+        <div class="shadow-grid" id="shadow-army-grid"></div>
+      </div>
+
+      <!-- Cleared Dungeons -->
+      <div class="char-block" style="padding-bottom:100px">
+        <div class="char-block-title">CLEARED DUNGEONS</div>
+        <div class="cleared-grid" id="cleared-dungeons-grid"></div>
       </div>
     </div>
-
-    <!-- Rank Journey -->
-    <div class="char-section">
-      <div class="char-section-title">RANK JOURNEY</div>
-      <div class="rank-journey-strip" id="rank-journey-strip"></div>
-    </div>
-
-    <!-- Stats Panel -->
-    <div class="char-section">
-      <div class="char-section-title">STAT PANEL</div>
-      <div class="stat-panel-grid" id="stat-panel-grid"></div>
-    </div>
-
-    <!-- Shadow Army (PRs) -->
-    <div class="char-section">
-      <div class="char-section-title">SHADOW ARMY</div>
-      <div class="char-section-sub">Each PR unlocks a named shadow soldier</div>
-      <div class="shadow-army-grid" id="shadow-army-grid"></div>
-    </div>
-
-    <!-- Cleared Dungeons -->
-    <div class="char-section" style="padding-bottom:100px">
-      <div class="char-section-title">CLEARED DUNGEONS</div>
-      <div class="char-section-sub">Completed training weeks</div>
-      <div class="cleared-dungeons-grid" id="cleared-dungeons-grid"></div>
-    </div>
-
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════
-     WEEK PAGE (unchanged structure, restyled)
-═══════════════════════════════════════════ -->
+<!-- ════════════════════════════════════════
+     PAGE: WEEK (DUNGEON)
+════════════════════════════════════════ -->
 <div id="page-week" class="page">
-  <div class="wk-wrap">
-    <button class="wk-back" onclick="showPage('home')">← Back to Dashboard</button>
-    <div class="wk-title">DUNGEON <span id="wk-num-title">1</span></div>
-    <div class="wk-meta">
-      <div class="wk-phase" id="wk-phase-badge">Foundation</div>
-      <div class="wk-prog-badge"><span id="wk-prog-pct">0%</span> cleared</div>
+  <div class="dungeon-page-wrap">
+    <button class="sys-back-btn" onclick="showPage('home')">← BACK</button>
+    <div class="dungeon-page-header">
+      <div class="dungeon-page-num">DUNGEON <span id="wk-num-title">01</span></div>
+      <div class="dungeon-page-meta">
+        <span class="dungeon-phase-badge" id="wk-phase-badge">Foundation</span>
+        <span class="dungeon-prog-badge"><span id="wk-prog-pct">0%</span> cleared</span>
+      </div>
     </div>
-    <div class="wk-guidance" id="wk-guidance-txt"></div>
+    <div class="dungeon-guidance" id="wk-guidance-txt"></div>
     <div id="week-body"></div>
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════
-     NUTRITION PAGE
-═══════════════════════════════════════════ -->
+<!-- ════════════════════════════════════════
+     PAGE: NUTRITION
+════════════════════════════════════════ -->
 <div id="page-nutr" class="page">
-  <div class="page-wrap">
-    <div class="page-hd">
-      <div class="page-title">🥗 Nutrition Plan</div>
-      <div class="page-sub">Fuel your ascent</div>
+  <div class="sys-page-wrap">
+    <div class="sys-page-header">
+      <div class="sys-page-title">⬡ NUTRITION</div>
+      <div class="sys-page-sub">Fuel your ascent</div>
     </div>
-    <div class="nutr-day-nav">
-      <button class="nutr-prev" onclick="nutrPrev()">‹</button>
-      <div class="nutr-day-label" id="nutr-day-label">Monday</div>
-      <button class="nutr-next" onclick="nutrNext()">›</button>
+    <!-- day tabs -->
+    <div class="sys-day-tabs" id="nutr-day-tabs"></div>
+    <!-- calorie goal -->
+    <div class="sys-card sys-nutr-goal-card">
+      <div class="nutr-goal-row">
+        <span class="nutr-goal-label">Calorie Goal</span>
+        <input class="sys-inp" id="cal-goal-inp" type="number" min="800" max="5000" placeholder="1800">
+        <span style="color:var(--t2);font-size:12px">kcal</span>
+        <button class="sys-btn-sm" onclick="setCalGoal()">Set</button>
+      </div>
     </div>
-    <div id="nutr-content"></div>
+    <!-- BMI nutr banner -->
+    <div id="bmi-nutr-status"></div>
+    <!-- Calorie ring + macros -->
+    <div class="sys-card nutr-ring-card">
+      <div class="nutr-ring-wrap">
+        <svg class="nutr-ring-svg" viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="42" fill="none" stroke="var(--surface3)" stroke-width="6"/>
+          <circle id="cal-ring-fill" cx="50" cy="50" r="42" fill="none"
+            stroke="var(--accent)" stroke-width="6"
+            stroke-dasharray="264" stroke-dashoffset="264"
+            stroke-linecap="round" transform="rotate(-90 50 50)"
+            style="transition:stroke-dashoffset 0.6s ease"/>
+        </svg>
+        <div class="nutr-ring-center">
+          <div class="nutr-ring-val" id="cal-eaten">0</div>
+          <div class="nutr-ring-lbl">kcal</div>
+        </div>
+      </div>
+      <div class="nutr-macros-col">
+        <div class="nutr-macro-row">
+          <span class="nutr-macro-name">Protein</span>
+          <span class="nutr-macro-val" id="macro-protein-val">0g</span>
+        </div>
+        <div class="nutr-macro-bar-track"><div class="nutr-macro-bar" id="mb-protein" style="width:0%;background:var(--accent)"></div></div>
+        <div style="font-size:10px;color:var(--t2);text-align:right" id="mb-protein-val">0 / 150g</div>
+        <div class="nutr-macro-row" style="margin-top:8px">
+          <span class="nutr-macro-name">Carbs</span>
+          <span class="nutr-macro-val" id="macro-carbs-val">0g</span>
+        </div>
+        <div class="nutr-macro-bar-track"><div class="nutr-macro-bar" id="mb-carbs" style="width:0%;background:var(--blue)"></div></div>
+        <div style="font-size:10px;color:var(--t2);text-align:right" id="mb-carbs-val">0 / 200g</div>
+        <div class="nutr-macro-row" style="margin-top:8px">
+          <span class="nutr-macro-name">Fat</span>
+          <span class="nutr-macro-val" id="macro-fat-val">0g</span>
+        </div>
+        <div class="nutr-macro-bar-track"><div class="nutr-macro-bar" id="mb-fat" style="width:0%;background:var(--gold)"></div></div>
+        <div style="font-size:10px;color:var(--t2);text-align:right" id="mb-fat-val">0 / 55g</div>
+        <div class="nutr-remaining" id="cal-remaining-lbl">0 kcal remaining</div>
+      </div>
+    </div>
+    <!-- Water -->
+    <div class="sys-card">
+      <div class="sys-card-title">HYDRATION</div>
+      <div class="water-row">
+        <div class="water-cups" id="water-cups"></div>
+        <div class="water-val" id="water-val">0 / 8</div>
+      </div>
+      <div id="water-hist-wrap"></div>
+    </div>
+    <!-- Meals -->
+    <div id="nutr-meals"></div>
   </div>
 </div>
 
-<!-- WARMUP PAGE -->
+<!-- ════════════════════════════════════════
+     PAGE: WARMUP
+════════════════════════════════════════ -->
 <div id="page-warmup" class="page">
-  <div class="page-wrap">
-    <div class="page-hd">
-      <div class="page-title">🔥 Warmup Protocol</div>
-      <div class="page-sub">Prepare the body for battle</div>
+  <div class="sys-page-wrap">
+    <div class="sys-page-header">
+      <div class="sys-page-title">▲ WARMUP</div>
+      <div class="sys-page-sub">Prepare for battle</div>
     </div>
-    <div class="warmup-muscle-nav" id="warmup-muscle-nav"></div>
-    <div id="warmup-content"></div>
+    <div class="warmup-grid" id="warmup-grid"></div>
+    <div id="warmup-detail-container"></div>
   </div>
 </div>
 
-<!-- HIIT PAGE -->
+<!-- ════════════════════════════════════════
+     PAGE: HIIT
+════════════════════════════════════════ -->
 <div id="page-hiit" class="page">
-  <div class="page-wrap">
-    <div class="page-hd">
-      <div class="page-title">⚡ HIIT Protocols</div>
-      <div class="page-sub">Push beyond your limits</div>
+  <div class="sys-page-wrap">
+    <div class="sys-page-header">
+      <div class="sys-page-title">⚡ HIIT</div>
+      <div class="sys-page-sub">Push past your limits</div>
     </div>
     <div id="hiit-content"></div>
   </div>
 </div>
 
-<!-- VOLUME PAGE -->
+<!-- ════════════════════════════════════════
+     PAGE: VOLUME
+════════════════════════════════════════ -->
 <div id="page-vol" class="page">
-  <div class="page-wrap">
-    <div class="page-hd">
-      <div class="page-title">📊 Volume Tracker</div>
-      <div class="page-sub">Track weekly training load</div>
+  <div class="sys-page-wrap">
+    <div class="sys-page-header">
+      <div class="sys-page-title">◉ VOLUME</div>
+      <div class="sys-page-sub">Training load analysis</div>
     </div>
-    <div class="vol-week-nav">
-      <button class="vol-nav-btn" onclick="volPrev()">‹</button>
-      <span class="vol-week-label">Week <span id="vol-week-num">1</span></span>
-      <button class="vol-nav-btn" onclick="volNext()">›</button>
+    <div class="vol-week-scroll" id="vol-week-select"></div>
+    <div class="vol-grid" id="vol-grid"></div>
+    <div class="sys-card" style="margin-top:16px;padding:12px">
+      <div id="vol-chart-area"></div>
     </div>
-    <div id="vol-content"></div>
   </div>
 </div>
 
-<!-- CALENDAR PAGE -->
+<!-- ════════════════════════════════════════
+     PAGE: CALENDAR
+════════════════════════════════════════ -->
 <div id="page-cal" class="page">
-  <div class="page-wrap">
-    <div class="page-hd">
-      <div class="page-title">📅 Training Calendar</div>
+  <div class="sys-page-wrap">
+    <div class="sys-page-header">
+      <div class="sys-page-title">▦ CALENDAR</div>
     </div>
-    <div class="cal-nav">
-      <button class="cal-nav-btn" onclick="calPrev()">‹</button>
-      <span class="cal-month-title" id="cal-month-title"></span>
-      <button class="cal-nav-btn" onclick="calNext()">›</button>
+    <div class="sys-cal-nav">
+      <button class="sys-nav-arrow" onclick="calPrev()">‹</button>
+      <span class="sys-cal-month" id="cal-month-title"></span>
+      <button class="sys-nav-arrow" onclick="calNext()">›</button>
     </div>
     <div class="cal-grid" id="cal-grid"></div>
     <div class="cal-legend">
@@ -369,123 +512,135 @@
   </div>
 </div>
 
-<!-- GOALS PAGE -->
+<!-- ════════════════════════════════════════
+     PAGE: GOALS / QUESTS
+════════════════════════════════════════ -->
 <div id="page-goals" class="page">
-  <div class="page-wrap">
-    <div class="page-hd">
-      <div class="page-title">🎯 Active Quests</div>
-      <div class="page-sub">Complete quests to gain XP</div>
+  <div class="sys-page-wrap">
+    <div class="sys-page-header">
+      <div class="sys-page-title">◆ QUESTS</div>
+      <div class="sys-page-sub">Issue and complete system objectives</div>
     </div>
-    <div class="goal-add-card">
-      <input class="goal-inp" id="goal-txt-inp" type="text" placeholder="New quest objective…" maxlength="100">
-      <select class="goal-type-sel" id="goal-type-inp">
-        <option value="strength">💪 Strength</option>
-        <option value="weight">⚖️ Weight</option>
-        <option value="cardio">🏃 Cardio</option>
-        <option value="habit">🔥 Habit</option>
-        <option value="other">🎯 Other</option>
-      </select>
-      <button class="goal-add-btn" onclick="addGoal()">+ Issue Quest</button>
+    <div class="sys-card quest-add-card">
+      <input class="sys-inp quest-inp" id="goal-txt-inp" type="text"
+        placeholder="New quest objective…" maxlength="100">
+      <div class="quest-add-row">
+        <select class="sys-sel" id="goal-type-inp">
+          <option value="strength">Strength</option>
+          <option value="weight">Weight</option>
+          <option value="cardio">Cardio</option>
+          <option value="habit">Habit</option>
+          <option value="other">Other</option>
+        </select>
+        <button class="sys-btn" onclick="addGoal()">ISSUE QUEST</button>
+      </div>
     </div>
-    <div class="goal-tabs">
-      <button class="goal-tab active" id="tab-active" onclick="switchGoalTab('active')">Active</button>
-      <button class="goal-tab" id="tab-done" onclick="switchGoalTab('done')">Completed</button>
+    <div class="quest-tabs">
+      <button class="qtab active" id="tab-active" onclick="switchGoalTab('active')">
+        ACTIVE <span class="qtab-count" id="cnt-active">0</span>
+      </button>
+      <button class="qtab" id="tab-done" onclick="switchGoalTab('done')">
+        COMPLETE <span class="qtab-count" id="cnt-done">0</span>
+      </button>
     </div>
     <div id="goals-list"></div>
   </div>
 </div>
 
-<!-- PR PAGE -->
+<!-- ════════════════════════════════════════
+     PAGE: PRs
+════════════════════════════════════════ -->
 <div id="page-pr" class="page">
-  <div class="page-wrap">
-    <div class="page-hd">
-      <div class="page-title">💪 Personal Records</div>
-      <div class="page-sub">Your legendary achievements</div>
-    </div>
-    <div class="pr-log-card">
-      <div class="pr-log-title">Log a PR</div>
-      <div class="pr-log-row">
-        <select class="pr-lift-sel" id="pr-lift-sel"></select>
-        <input class="pr-inp" id="pr-kg-inp" type="number" step="0.5" min="0" placeholder="kg">
-        <input class="pr-inp" id="pr-reps-inp" type="number" min="1" max="100" placeholder="reps">
-        <button class="pr-log-btn" onclick="logPRFromForm()">Log PR</button>
-      </div>
+  <div class="sys-page-wrap">
+    <div class="sys-page-header">
+      <div class="sys-page-title">★ RECORDS</div>
+      <div class="sys-page-sub">Personal power ceiling</div>
     </div>
     <div id="pr-grid"></div>
-    <div class="pr-history-title">Recent Logs</div>
-    <div id="pr-history"></div>
+    <div class="sys-section-title" style="margin:20px 0 12px">HISTORY</div>
+    <div id="pr-hist-list"></div>
   </div>
 </div>
 
-<!-- BMI PAGE -->
+<!-- ════════════════════════════════════════
+     PAGE: BMI
+════════════════════════════════════════ -->
 <div id="page-bmi" class="page">
-  <div class="page-wrap">
-    <div class="page-hd">
-      <div class="page-title">⚖️ BMI &amp; Calories</div>
+  <div class="sys-page-wrap">
+    <div class="sys-page-header">
+      <div class="sys-page-title">⬟ BMI & CALORIES</div>
     </div>
     <div id="bmi-content"></div>
   </div>
 </div>
 
-<!-- CUSTOMIZE PAGE -->
+<!-- ════════════════════════════════════════
+     PAGE: CUSTOMIZE
+════════════════════════════════════════ -->
 <div id="page-customize" class="page">
-  <div class="page-wrap">
-    <div class="page-hd">
-      <div class="page-title">⚙️ Customize</div>
-      <div class="page-sub">Tailor your training protocol</div>
+  <div class="sys-page-wrap">
+    <div class="sys-page-header">
+      <div class="sys-page-title">⚙ CUSTOMIZE</div>
+      <div class="sys-page-sub">Configure your training protocol</div>
     </div>
     <div id="customize-content"></div>
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════
-     MODALS (unchanged functionality)
-═══════════════════════════════════════ -->
+<!-- ════════════════════════════════════════
+     MODALS (keep original IDs exactly)
+════════════════════════════════════════ -->
 
-<!-- CUSTOMIZE EXERCISE MODAL -->
-<div class="cust-modal-overlay" id="cust-modal" onclick="if(event.target===this)closeCustModal()">
-  <div class="cust-modal-box">
-    <div class="cust-modal-hd">
-      <div><div class="cust-modal-title" id="cust-modal-title">Edit Exercise</div><div class="cust-modal-day" id="cust-modal-day"></div></div>
-      <button class="cust-modal-close" onclick="closeCustModal()">✕</button>
+<!-- EXERCISE CUSTOMIZE MODAL -->
+<div class="modal-overlay" id="cust-modal" onclick="if(event.target===this)closeCustModal()">
+  <div class="modal-box">
+    <div class="modal-hd">
+      <div>
+        <div class="modal-title" id="cust-modal-title">Edit Exercise</div>
+        <div class="modal-sub" id="cust-modal-day"></div>
+      </div>
+      <button class="modal-close" onclick="closeCustModal()">✕</button>
     </div>
-    <div class="cust-modal-body">
-      <div class="cust-field"><label class="cust-field-lbl">Exercise Name</label><input class="cust-inp" id="cust-name-inp" type="text" placeholder="e.g. Barbell Squat"></div>
-      <div class="cust-field"><label class="cust-field-lbl">Sets × Reps</label><input class="cust-inp" id="cust-sets-inp" type="text" placeholder="e.g. 4×8–10"></div>
-      <div class="cust-field"><label class="cust-field-lbl">Num Sets</label><input class="cust-inp" id="cust-numsets-inp" type="number" min="0" max="10" placeholder="e.g. 4"></div>
-      <div class="cust-field"><label class="cust-field-lbl">Alternative</label><input class="cust-inp" id="cust-alt-inp" type="text" placeholder="e.g. Goblet Squat"></div>
-      <div class="cust-field">
-        <label class="cust-field-lbl">Apply to</label>
-        <select class="cust-inp" id="cust-scope-sel">
+    <div class="modal-body">
+      <div class="modal-field"><label class="modal-lbl">Exercise Name</label><input class="sys-inp" id="cust-name-inp" type="text" placeholder="e.g. Barbell Squat"></div>
+      <div class="modal-field"><label class="modal-lbl">Sets × Reps</label><input class="sys-inp" id="cust-sets-inp" type="text" placeholder="e.g. 4×8–10"></div>
+      <div class="modal-field"><label class="modal-lbl">Num Sets</label><input class="sys-inp" id="cust-numsets-inp" type="number" min="0" max="10"></div>
+      <div class="modal-field"><label class="modal-lbl">Alternative</label><input class="sys-inp" id="cust-alt-inp" type="text" placeholder="e.g. Goblet Squat"></div>
+      <div class="modal-field">
+        <label class="modal-lbl">Apply to</label>
+        <select class="sys-sel" id="cust-scope-sel">
           <option value="all">All 12 Weeks</option>
           <option value="week">This Week Only</option>
         </select>
       </div>
     </div>
-    <div class="cust-modal-footer">
-      <button class="cust-reset-btn" onclick="resetCustModal()">🔄 Reset</button>
-      <button class="cust-save-btn" onclick="saveCustModal()">Save</button>
+    <div class="modal-footer">
+      <button class="modal-reset-btn" onclick="resetCustModal()">Reset</button>
+      <button class="modal-save-btn" onclick="saveCustModal()">Save</button>
     </div>
   </div>
 </div>
 
 <!-- NUTRITION CUSTOMIZE MODAL -->
-<div class="cust-modal-overlay" id="nutr-cust-modal" onclick="if(event.target===this)closeNutrCustomizeModal()">
-  <div class="cust-modal-box">
-    <div class="cust-modal-hd">
-      <div><div class="cust-modal-title" id="nutr-cust-modal-title">Edit Meal Item</div><div class="cust-modal-day" id="nutr-cust-modal-day"></div></div>
-      <button class="cust-modal-close" onclick="closeNutrCustomizeModal()">✕</button>
+<div class="modal-overlay" id="nutr-cust-modal" onclick="if(event.target===this)closeNutrCustomizeModal()">
+  <div class="modal-box">
+    <div class="modal-hd">
+      <div>
+        <div class="modal-title" id="nutr-cust-modal-title">Edit Meal Item</div>
+        <div class="modal-sub" id="nutr-cust-modal-day"></div>
+      </div>
+      <button class="modal-close" onclick="closeNutrCustomizeModal()">✕</button>
     </div>
-    <div class="cust-modal-body">
-      <div class="cust-field"><label class="cust-field-lbl">Item Name</label><input class="cust-inp" id="nutr-cust-name-inp" type="text" placeholder="e.g. 2 Rotis"></div>
-      <div class="cust-field"><label class="cust-field-lbl">Calories (kcal)</label><input class="cust-inp" id="nutr-cust-cal-inp" type="number" min="0" max="9999" placeholder="e.g. 160"></div>
-      <div class="cust-field"><label class="cust-field-lbl">Protein (g)</label><input class="cust-inp" id="nutr-cust-protein-inp" type="number" min="0" max="999" step="0.5" placeholder="e.g. 6"></div>
-      <div class="cust-field"><label class="cust-field-lbl">Carbs (g)</label><input class="cust-inp" id="nutr-cust-carbs-inp" type="number" min="0" max="999" step="0.5" placeholder="e.g. 30"></div>
-      <div class="cust-field"><label class="cust-field-lbl">Fat (g)</label><input class="cust-inp" id="nutr-cust-fat-inp" type="number" min="0" max="999" step="0.5" placeholder="e.g. 2"></div>
+    <div class="modal-body">
+      <div class="modal-field"><label class="modal-lbl">Item Name</label><input class="sys-inp" id="nutr-cust-name-inp" type="text"></div>
+      <div class="modal-field"><label class="modal-lbl">Calories (kcal)</label><input class="sys-inp" id="nutr-cust-cal-inp" type="number" min="0" max="9999"></div>
+      <div class="modal-field"><label class="modal-lbl">Protein (g)</label><input class="sys-inp" id="nutr-cust-protein-inp" type="number" min="0" max="999" step="0.5"></div>
+      <div class="modal-field"><label class="modal-lbl">Carbs (g)</label><input class="sys-inp" id="nutr-cust-carbs-inp" type="number" min="0" max="999" step="0.5"></div>
+      <div class="modal-field"><label class="modal-lbl">Fat (g)</label><input class="sys-inp" id="nutr-cust-fat-inp" type="number" min="0" max="999" step="0.5"></div>
     </div>
-    <div class="cust-modal-footer">
-      <button class="cust-reset-btn" onclick="resetNutrCustomizeModal()">🔄 Reset to Original</button>
-      <button class="cust-save-btn" onclick="saveNutrCustomizeModal()">Save Changes</button>
+    <div class="modal-footer">
+      <button class="modal-reset-btn" onclick="resetNutrCustomizeModal()">Reset</button>
+      <button class="modal-save-btn" onclick="saveNutrCustomizeModal()">Save</button>
     </div>
   </div>
 </div>
@@ -498,7 +653,7 @@
         <div class="ex-modal-name" id="ex-modal-name">Exercise</div>
         <div class="ex-modal-muscles" id="ex-modal-muscles"></div>
       </div>
-      <button class="ex-modal-close" onclick="closeExModal()">✕</button>
+      <button class="modal-close" onclick="closeExModal()">✕</button>
     </div>
     <div class="ex-modal-body" id="ex-modal-body">
       <div class="ex-modal-img-wrap" id="ex-modal-img-wrap"></div>
@@ -507,13 +662,13 @@
         <div class="ex-modal-cues-list" id="ex-modal-cues"></div>
       </div>
       <div class="ex-modal-section" id="ex-modal-mistakes-section">
-        <div class="ex-modal-section-title">⚠️ Common Mistakes</div>
+        <div class="ex-modal-section-title">⚠ Common Mistakes</div>
         <div class="ex-modal-mistake-txt" id="ex-modal-mistakes"></div>
       </div>
       <div class="ex-modal-chips" id="ex-modal-chips"></div>
       <div id="ex-modal-cardio-section" style="display:none">
         <div class="ex-modal-section">
-          <div class="ex-modal-section-title">ℹ️ How to do it</div>
+          <div class="ex-modal-section-title">ℹ How to do it</div>
           <div class="ex-modal-cardio-tip" id="ex-modal-cardio-tip"></div>
           <div class="ex-modal-cardio-zone" id="ex-modal-cardio-zone"></div>
         </div>
@@ -537,15 +692,15 @@
       </div>
       <div id="ex-modal-weight-section" style="display:none">
         <div class="ex-modal-section">
-          <div class="ex-modal-section-title">📊 Log Your Sets</div>
+          <div class="ex-modal-section-title">◉ Log Your Sets</div>
           <div class="ex-modal-sets-grid" id="ex-modal-sets-grid"></div>
         </div>
         <div class="ex-modal-feedback" id="ex-modal-feedback" style="display:none">
-          <div class="ex-modal-feedback-icon" id="ex-modal-feedback-icon">💪</div>
+          <div class="ex-modal-feedback-icon" id="ex-modal-feedback-icon">★</div>
           <div class="ex-modal-feedback-txt" id="ex-modal-feedback-txt"></div>
         </div>
         <div class="ex-modal-section" id="ex-modal-progress-section">
-          <div class="ex-modal-section-title">📈 Week-by-Week Progress</div>
+          <div class="ex-modal-section-title">▲ Progress</div>
           <div id="ex-modal-progress-chart"></div>
         </div>
         <button class="ex-modal-done-btn" id="ex-modal-done-btn" onclick="markExDoneFromModal()">✓ Mark as Done</button>
@@ -554,16 +709,19 @@
   </div>
 </div>
 
-<!-- WORKOUT COMPLETE POPUP -->
-<div class="workout-popup-overlay" id="workout-popup" onclick="if(event.target===this)closeWorkoutPopup()">
-  <div class="workout-popup-box">
-    <div class="workout-popup-confetti" id="popup-confetti"></div>
-    <div class="workout-popup-system">◈ SYSTEM MESSAGE ◈</div>
-    <div class="workout-popup-emoji" id="workout-popup-emoji">⚔️</div>
-    <div class="workout-popup-title" id="workout-popup-title">DUNGEON CLEARED!</div>
-    <div class="workout-popup-sub" id="workout-popup-sub">Quest complete. XP awarded.</div>
-    <div class="workout-popup-stats" id="workout-popup-stats"></div>
-    <button class="workout-popup-btn" onclick="closeWorkoutPopup()">ARISE ⚔️</button>
+<!-- WORKOUT COMPLETE / DUNGEON CLEARED POPUP -->
+<div class="dungeon-cleared-overlay" id="workout-popup" onclick="if(event.target===this)closeWorkoutPopup()">
+  <div class="dungeon-cleared-box">
+    <div class="dc-particles" id="popup-confetti"></div>
+    <div class="dc-eye">
+      <div class="dc-eye-ring"></div>
+      <div class="dc-eye-core"></div>
+    </div>
+    <div class="dc-system-line">◈ SYSTEM MESSAGE ◈</div>
+    <div class="dc-title" id="workout-popup-title">DUNGEON CLEARED</div>
+    <div class="dc-sub" id="workout-popup-sub">Quest complete.</div>
+    <div class="dc-stats" id="workout-popup-stats"></div>
+    <button class="dc-btn" onclick="closeWorkoutPopup()">ARISE ⚔</button>
   </div>
 </div>
 
@@ -589,7 +747,7 @@
 
 <!-- TOAST -->
 <div class="toast" id="toast">
-  <div class="toast-icon" id="toast-icon">⚔️</div>
+  <div class="toast-icon" id="toast-icon">◈</div>
   <div class="toast-msg" id="toast-msg"></div>
 </div>
 

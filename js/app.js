@@ -1957,7 +1957,7 @@ function closeNutrCustomizeModal() {
 }
 
 /* ── DRAWER ── */
-function openDrawer() {
+function openDrawer_orig() {
   document.getElementById('side-drawer').classList.add('open');
   document.getElementById('drawer-overlay').classList.add('open');
   // sync streak in drawer
@@ -1965,7 +1965,7 @@ function openDrawer() {
   const dsn = document.getElementById('drawer-streak-num');
   if (dsn) dsn.textContent = s;
 }
-function closeDrawer() {
+function closeDrawer_orig() {
   document.getElementById('side-drawer').classList.remove('open');
   document.getElementById('drawer-overlay').classList.remove('open');
 }
@@ -3128,4 +3128,518 @@ closeWorkoutPopup = function() {
   checkRankUp();
   _origCloseWorkoutPopup();
 }
+
+
+/* ═══════════════════════════════════════════════════
+   HUNTER'S SYSTEM — RPG ENGINE (complete)
+═══════════════════════════════════════════════════ */
+
+/* ── PANEL FUNCTIONS (replace drawer) ── */
+function openPanel() {
+  document.getElementById('side-panel').classList.add('open');
+  document.getElementById('panel-overlay').classList.add('open');
+}
+function closePanel() {
+  document.getElementById('side-panel').classList.remove('open');
+  document.getElementById('panel-overlay').classList.remove('open');
+}
+// Aliases for any existing calls
+function openDrawer() { openPanel(); }
+function closeDrawer() { closePanel(); }
+
+/* ── RANK CONFIG ── */
+const RANKS = [
+  { letter:'E',   name:'E-Rank Hunter',      xp:0,    color:'#5c5c7a', msg:'The journey begins. Every legend starts here.',      next:'D' },
+  { letter:'D',   name:'D-Rank Hunter',      xp:100,  color:'#00e676', msg:'You have shown your will. The gates open.',           next:'C' },
+  { letter:'C',   name:'C-Rank Hunter',      xp:250,  color:'#448aff', msg:'Discipline forges strength. You are rising.',         next:'B' },
+  { letter:'B',   name:'B-Rank Hunter',      xp:500,  color:'#7c4dff', msg:'Your aura grows. Shadows gather around you.',         next:'A' },
+  { letter:'A',   name:'A-Rank Hunter',      xp:800,  color:'#ff6d00', msg:'Few reach this height. Your legend takes form.',      next:'S' },
+  { letter:'S',   name:'S-Rank Hunter',      xp:1100, color:'#ffd740', msg:'Among the elite. Your name echoes in the dark.',      next:'SS' },
+  { letter:'SS',  name:'SS-Rank Hunter',     xp:1500, color:'#ff4081', msg:'You have transcended. The System bows.',              next:'SSS' },
+  { letter:'SSS', name:'The Shadow Monarch', xp:2000, color:'#ff1744', msg:'You stand alone. ARISE, SHADOW MONARCH.',             next:null },
+];
+
+const CHAR_IMAGES = {
+  dark:  { E:'images/dark_e.png',  D:'images/dark_d.png',  C:'images/dark_c.png',  B:'images/dark_b.png',  A:'images/dark_a.png',  S:'images/dark_s.png',  SS:'images/dark_ss.png',  SSS:'images/dark_sss.png'  },
+  light: { E:'images/light_e.png', D:'images/light_d.png', C:'images/light_c.png', B:'images/light_b.png', A:'images/light_a.png', S:'images/light_s.png', SS:'images/light_ss.png', SSS:'images/light_sss.png' },
+};
+const SILHOUETTE = { dark:'images/silhouette_dark.png', light:'images/silhouette_light.png' };
+const STAT_ICONS = {
+  dark:  { STR:'images/str_dark.png',  END:'images/end_dark.png',  AGI:'images/agi_dark.png',  WIL:'images/wil_dark.png'  },
+  light: { STR:'images/str_light.png', END:'images/end_light.png', AGI:'images/agi_light.png', WIL:'images/wil_light.png' },
+};
+const SHADOW_ROSTER = [
+  { id:'igris',  name:'Igris',  icon:'⚔️', lift:'Bench Press / DB Press',    req:1, reqType:'lift' },
+  { id:'tank',   name:'Tank',   icon:'🛡️', lift:'Squat OR Leg Press',         req:1, reqType:'lift' },
+  { id:'fangs',  name:'Fangs',  icon:'🐺', lift:'Deadlift / RDL',             req:1, reqType:'lift' },
+  { id:'beru',   name:'Beru',   icon:'🦅', lift:'Lat Pulldown / Assisted Pull',req:1, reqType:'lift' },
+  { id:'kaisel', name:'Kaisel', icon:'🐉', lift:'Overhead Press',              req:1, reqType:'lift' },
+  { id:'tusk',   name:'Tusk',   icon:'🦷', lift:'Barbell Row',                 req:1, reqType:'lift' },
+  { id:'greed',  name:'Greed',  icon:'👑', lift:null,                          req:5, reqType:'count' },
+  { id:'iron',   name:'Iron',   icon:'💎', lift:null,                          req:10,reqType:'count' },
+];
+const DUNGEON_BOSSES = [
+  'Iron Sentinel','Void Shade','Bone Crusher','Frost Wraith',
+  'Lava Drake','Soul Reaper','Dark Titan','Abyss Lurker',
+  'Storm Khan','Undying King','Rift Lord','The True Shadow',
+];
+const SYSTEM_MSGS = [
+  'Quest complete. The System rewards your commitment.',
+  'The shadows grow stronger with each victory.',
+  'Another gate closed. Another legend forged.',
+  'Arise. This dungeon has been cleared.',
+  'The System acknowledges your strength.',
+  'Power is earned in silence and sweat.',
+  'You have proven your worth. Rise further.',
+];
+
+/* ── XP ENGINE ── */
+function calcXP() {
+  return getTotalExDone() * 2
+    + getCompletedWeeksCount() * 30
+    + getGoals().filter(g=>g.done).length * 20
+    + Object.keys(getPRs()).length * 15
+    + Math.min(getStreak(), 84);
+}
+
+function getHunterRank() {
+  const xp = calcXP();
+  let ri = 0;
+  for (let i = RANKS.length-1; i >= 0; i--) { if (xp >= RANKS[i].xp) { ri = i; break; } }
+  const rank = RANKS[ri];
+  const nxt  = RANKS[ri+1] || null;
+  const into  = xp - rank.xp;
+  const need  = nxt ? nxt.xp - rank.xp : 1;
+  const pct   = nxt ? Math.min(100, Math.round(into/need*100)) : 100;
+  return { ...rank, ri, xp, into, need, pct, nxt };
+}
+
+/* ── RANK-UP CHECK ── */
+function checkRankUp() {
+  const rd = getHunterRank();
+  const prev = parseInt(ls('sys_rank_idx') || '0');
+  ls('sys_rank_idx', rd.ri);
+  if (rd.ri > prev) showRankUpCeremony(rd);
+}
+
+function showRankUpCeremony(rd) {
+  const ov = document.getElementById('rankup-overlay');
+  if (!ov) return;
+  const nr = document.getElementById('rankup-new-rank');
+  const msg = document.getElementById('rankup-msg');
+  const sym = document.getElementById('rankup-symbol');
+  if (nr)  { nr.textContent  = rd.letter+'-RANK'; nr.style.color = rd.color; }
+  if (msg) msg.textContent = rd.msg;
+  if (sym) { sym.style.color = rd.color; }
+
+  const pp = document.getElementById('rankup-particles');
+  if (pp) {
+    pp.innerHTML = '';
+    for (let i = 0; i < 28; i++) {
+      const p = document.createElement('div');
+      p.className = 'rankup-particle';
+      const a = (i/28)*Math.PI*2;
+      const d = 70+Math.random()*100;
+      p.style.cssText = `left:50%;top:50%;background:${rd.color};--tx:${Math.cos(a)*d}px;--ty:${Math.sin(a)*d}px;animation-delay:${Math.random()*0.3}s`;
+      pp.appendChild(p);
+    }
+  }
+  ov.classList.add('show');
+}
+
+function closeRankUp() {
+  const ov = document.getElementById('rankup-overlay');
+  if (ov) ov.classList.remove('show');
+}
+
+/* ── BOOT / ONBOARDING ── */
+function bootInit() {
+  const bs = document.getElementById('boot-screen');
+  if (!bs) return;
+  const name = ls('hunter_name');
+  if (name) { bs.classList.add('hidden'); mainInit(); return; }
+
+  // Run boot sequence
+  const lines = [
+    '> SYSTEM BOOT v4.0.1',
+    '> Scanning dimensional rift...',
+    '> Anomaly detected.',
+    '> New hunter signature found.',
+    '> Initializing Hunter Profile...',
+    '> Stand by.',
+    '',
+  ];
+  const linesEl = document.getElementById('boot-lines');
+  const center  = document.getElementById('boot-center');
+  const prompt  = document.getElementById('boot-name-prompt');
+  const msgEl   = document.getElementById('boot-message');
+  let i = 0;
+  const typeNext = () => {
+    if (i < lines.length) {
+      const div = document.createElement('div');
+      div.textContent = lines[i++];
+      if (linesEl) linesEl.appendChild(div);
+      setTimeout(typeNext, 220);
+    } else {
+      // Show center eye
+      if (center) center.style.display = 'flex';
+      setTimeout(() => { if (prompt) prompt.style.display = 'block'; }, 1200);
+    }
+  };
+  setTimeout(typeNext, 400);
+}
+
+function bootConfirm() {
+  const inp = document.getElementById('boot-name-inp');
+  const name = inp ? inp.value.trim() : '';
+  if (!name) {
+    if (inp) { inp.style.borderColor='var(--red)'; setTimeout(()=>inp.style.borderColor='',800); }
+    return;
+  }
+  ls('hunter_name', name);
+  ls('sys_rank_idx', '0');
+  const bs = document.getElementById('boot-screen');
+  if (bs) {
+    bs.classList.add('fade-out');
+    setTimeout(() => { bs.classList.add('hidden'); mainInit(); }, 1000);
+  }
+}
+
+/* ── MAIN INIT (after onboarding) ── */
+function mainInit() {
+  history.replaceState({ page:'home' }, '', '');
+  requestNotifications();
+  renderHome();
+  renderNotifSettings();
+  initNotificationScheduler();
+  updateIdentityPanel();
+  updateTopbar();
+  updatePanel();
+
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js').catch(()=>{});
+    });
+  }
+  let dp = null;
+  window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault(); dp = e;
+    const b = document.createElement('button');
+    b.textContent = '📲 Install App';
+    b.style.cssText = 'position:fixed;bottom:84px;left:20px;z-index:400;background:var(--accent);border:none;color:#fff;font-family:"Share Tech Mono",monospace;font-size:11px;letter-spacing:2px;padding:10px 16px;cursor:pointer;';
+    b.onclick = () => { dp.prompt(); dp.userChoice.then(()=>{b.remove();dp=null;}); };
+    document.body.appendChild(b);
+  });
+}
+
+/* ── TOPBAR + PANEL UPDATE ── */
+function updateTopbar() {
+  const rd = getHunterRank();
+  const tb = document.getElementById('topbar-rank');
+  if (tb) { tb.textContent = rd.letter; tb.style.background = rd.color; }
+}
+
+function updatePanel() {
+  const rd = getHunterRank();
+  const name = ls('hunter_name') || 'HUNTER';
+  const pb = document.getElementById('panel-rank-badge');
+  const pn = document.getElementById('panel-hunter-name');
+  if (pb) { pb.textContent=rd.letter; pb.style.borderColor=rd.color; pb.style.color=rd.color; pb.style.background=`${rd.color}18`; }
+  if (pn) pn.textContent = name.toUpperCase();
+}
+
+/* ── IDENTITY PANEL (home hero) ── */
+function updateIdentityPanel() {
+  const rd    = getHunterRank();
+  const name  = ls('hunter_name') || 'HUNTER';
+  const theme = document.documentElement.getAttribute('data-theme') || 'dark';
+
+  // Portrait
+  const portImg  = document.getElementById('id-portrait');
+  if (portImg) {
+    portImg.src = CHAR_IMAGES[theme][rd.letter] || SILHOUETTE[theme];
+    portImg.onerror = () => { portImg.src = SILHOUETTE[theme]; portImg.onerror=null; };
+  }
+
+  // Background glow tint based on rank
+  const bg = document.getElementById('id-panel-bg');
+  if (bg) {
+    bg.style.background = theme === 'dark'
+      ? `radial-gradient(ellipse 500px 300px at 30% 50%, ${rd.color}12 0%, var(--bg) 70%)`
+      : `radial-gradient(ellipse 500px 300px at 30% 50%, ${rd.color}0a 0%, var(--bg) 70%)`;
+  }
+
+  // Rank stamp
+  const stamp = document.getElementById('id-rank-stamp');
+  if (stamp) { stamp.textContent = rd.letter; stamp.style.background = rd.color; stamp.style.boxShadow = `0 0 20px ${rd.color}60`; }
+
+  // Name and rank
+  const nameEl = document.getElementById('id-name');
+  if (nameEl) nameEl.textContent = name.toUpperCase();
+  const rankFull = document.getElementById('id-rank-full');
+  if (rankFull) rankFull.textContent = rd.name.toUpperCase();
+  const rankMsg = document.getElementById('id-rank-msg');
+  if (rankMsg) rankMsg.textContent = rd.msg;
+
+  // XP bar
+  const xpFill = document.getElementById('id-xp-fill');
+  const xpNums = document.getElementById('id-xp-nums');
+  if (xpFill) { xpFill.style.width = rd.pct+'%'; xpFill.style.background = `linear-gradient(90deg,${rd.color},${rd.color}80)`; }
+  if (xpNums) xpNums.textContent = rd.nxt ? `${rd.into} / ${rd.need} XP` : 'MAX RANK';
+
+  // Quick stats
+  const qwks = document.getElementById('id-qs-weeks');
+  const qex  = document.getElementById('id-qs-ex');
+  const qpct = document.getElementById('id-qs-pct');
+  if (qwks) qwks.textContent = getCompletedWeeksCount();
+  if (qex)  qex.textContent  = getTotalExDone();
+  if (qpct) qpct.textContent = getGlobalProgress()+'%';
+
+  updateTopbar();
+  updatePanel();
+  checkRankUp();
+}
+
+/* ── CHARACTER PAGE ── */
+function renderCharacterPage() {
+  const rd    = getHunterRank();
+  const name  = ls('hunter_name') || 'HUNTER';
+  const theme = document.documentElement.getAttribute('data-theme') || 'dark';
+
+  // Backdrop image
+  const img = document.getElementById('char-portrait-img');
+  if (img) {
+    img.src = CHAR_IMAGES[theme][rd.letter] || SILHOUETTE[theme];
+    img.onerror = () => { img.src = SILHOUETTE[theme]; img.onerror=null; };
+  }
+  // Rank display
+  const rb = document.getElementById('char-rank-big');
+  const rn = document.getElementById('char-rank-name');
+  const nd = document.getElementById('char-hunter-name-display');
+  if (rb) { rb.textContent = rd.letter; rb.style.color = rd.color; rb.style.textShadow = `0 0 60px ${rd.color}60`; }
+  if (rn) rn.textContent = rd.name.toUpperCase();
+  if (nd) nd.textContent = name.toUpperCase();
+
+  // XP
+  const xf = document.getElementById('char-xp-fill');
+  const xv = document.getElementById('char-xp-val');
+  const xn = document.getElementById('char-next-rank');
+  if (xf) { xf.style.width=rd.pct+'%'; xf.style.background=`linear-gradient(90deg,${rd.color},${rd.color}60)`; }
+  if (xv) xv.textContent = rd.xp+' XP';
+  if (xn) xn.textContent = rd.nxt
+    ? `${rd.need - rd.into} XP until ${rd.nxt}-Rank`
+    : '🏆 Maximum Rank Achieved';
+
+  renderRankJourney(rd);
+  renderStatPanel(theme);
+  renderShadowArmy();
+  renderClearedDungeons();
+}
+
+function renderRankJourney(rd) {
+  const strip = document.getElementById('rank-journey-strip');
+  if (!strip) return;
+  strip.innerHTML = '';
+  RANKS.forEach((r, i) => {
+    const unlocked = i < rd.ri;
+    const current  = i === rd.ri;
+    const locked   = i > rd.ri;
+    const node = document.createElement('div');
+    node.className = `rj-node ${unlocked?'unlocked':current?'current':'locked'}`;
+    node.style.setProperty('--node-color', r.color);
+    const gem = document.createElement('div');
+    gem.className = 'rj-gem';
+    gem.textContent = r.letter;
+    if (unlocked||current) { gem.style.borderColor=r.color; gem.style.color=r.color; gem.style.background=`${r.color}18`; }
+    const lbl = document.createElement('div');
+    lbl.className = 'rj-label';
+    lbl.textContent = r.letter;
+    node.appendChild(gem); node.appendChild(lbl);
+    strip.appendChild(node);
+    if (i < RANKS.length-1) {
+      const conn = document.createElement('div');
+      conn.className = `rj-connector ${unlocked?'done':''}`;
+      if (unlocked) conn.style.background = r.color;
+      strip.appendChild(conn);
+    }
+  });
+}
+
+function renderStatPanel(theme) {
+  const grid = document.getElementById('stat-panel-grid');
+  if (!grid) return;
+  const prs  = getPRs();
+  const prN  = Object.keys(prs).length;
+  const totalEx = getTotalExDone();
+  const wksDone = getCompletedWeeksCount();
+  const streak  = getStreak();
+  const goalsDone = getGoals().filter(g=>g.done).length;
+
+  const stats = [
+    { key:'STR', label:'STRENGTH',  val:Math.min(999,prN*15+wksDone*5),     max:500,  color:'#ff6d00', desc:`${prN} PRs logged` },
+    { key:'END', label:'ENDURANCE', val:Math.min(999,totalEx*3),            max:2000, color:'#448aff', desc:`${totalEx} exercises` },
+    { key:'AGI', label:'AGILITY',   val:Math.min(999,streak*12+wksDone*8), max:500,  color:'#00e676', desc:`${streak} day streak` },
+    { key:'WIL', label:'WILLPOWER', val:Math.min(999,goalsDone*25+wksDone*10),max:400,color:'#7c4dff', desc:`${goalsDone} quests` },
+  ];
+
+  grid.innerHTML = '';
+  stats.forEach(s => {
+    const pct = Math.round(Math.min(100, s.val/s.max*100));
+    const card = document.createElement('div');
+    card.className = 'stat-panel-card';
+    card.style.setProperty('--stat-color', s.color);
+    card.style.borderLeftColor = s.color;
+    const icons = STAT_ICONS[theme] || STAT_ICONS.dark;
+    card.innerHTML = `
+      <img class="stat-panel-icon" src="${icons[s.key]||''}" alt="${s.key}"
+        onerror="this.style.fontSize='24px';this.style.width='';this.alt='${['⚔️','🛡️','⚡','◈'][['STR','END','AGI','WIL'].indexOf(s.key)]}';this.style.display='block'">
+      <div class="stat-panel-text">
+        <div class="stat-panel-name">${s.label}</div>
+        <div class="stat-panel-val" style="color:${s.color}">${s.val}</div>
+        <div class="stat-panel-bar">
+          <div class="stat-panel-bar-fill" style="width:${pct}%;background:${s.color}"></div>
+        </div>
+        <div style="font-size:9px;color:var(--t2);margin-top:3px;font-family:'Share Tech Mono',monospace">${s.desc}</div>
+      </div>`;
+    grid.appendChild(card);
+  });
+}
+
+function renderShadowArmy() {
+  const grid = document.getElementById('shadow-army-grid');
+  if (!grid) return;
+  const prs  = getPRs();
+  const prN  = Object.keys(prs).length;
+  grid.innerHTML = '';
+  SHADOW_ROSTER.forEach(s => {
+    let unlocked = false;
+    if (s.reqType === 'lift') {
+      unlocked = Object.keys(prs).some(k =>
+        s.lift && k.toLowerCase().includes(s.lift.split('/')[0].trim().toLowerCase().slice(0,6))
+      );
+    } else {
+      unlocked = prN >= s.req;
+    }
+    const card = document.createElement('div');
+    card.className = `shadow-card ${unlocked?'active':'locked'}`;
+    card.innerHTML = `
+      <div class="shadow-icon">${s.icon}</div>
+      <div class="shadow-name">${s.name}</div>
+      ${!unlocked ? `<div style="font-size:8px;color:var(--t2);margin-top:2px;font-family:'Share Tech Mono',monospace">${s.reqType==='lift'?'Log PR':''+prN+'/'+s.req+' PRs'}</div>` : ''}
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function renderClearedDungeons() {
+  const grid = document.getElementById('cleared-dungeons-grid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  for (let w = 1; w <= 12; w++) {
+    const prog = getWeekProgress(w);
+    const card = document.createElement('div');
+    card.className = `dungeon-card ${prog.complete?'cleared':prog.done>0?'':''}`;
+    card.innerHTML = `
+      <div class="dungeon-week-num">${String(w).padStart(2,'0')}</div>
+      <div class="dungeon-name">${prog.complete ? DUNGEON_BOSSES[w-1] : prog.done>0 ? 'In Progress' : '???'}</div>
+      ${prog.complete ? '<div style="font-size:9px;color:var(--green);margin-top:4px;font-family:\'Share Tech Mono\',monospace;letter-spacing:1px">CLEARED</div>' : ''}
+    `;
+    card.onclick = () => { currentWeekPage = w; showPage('week'); };
+    grid.appendChild(card);
+  }
+}
+
+/* ── THEME TOGGLE UPDATE ── */
+const _origToggleTheme = toggleTheme;
+toggleTheme = function() {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const next   = isDark ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  ls('gym_theme', next);
+  const btn = document.getElementById('theme-btn');
+  if (btn) btn.textContent = isDark ? '☀' : '◐';
+  const dbtn = document.getElementById('theme-btn-drawer');
+  if (dbtn) dbtn.textContent = '◐ Toggle Mode';
+  updateIdentityPanel();
+  // re-render character page portrait if on that page
+  if (_activePage === 'character') renderCharacterPage();
+};
+
+/* ── PATCH renderHome to call identity panel ── */
+const _origRenderHome = renderHome;
+renderHome = function() {
+  _origRenderHome();
+  updateIdentityPanel();
+};
+
+/* ── PATCH showPage to include character page ── */
+const _origShowPage = showPage;
+showPage = function(page, pushState=true) {
+  _origShowPage(page, pushState);
+  if (page === 'character') renderCharacterPage();
+};
+
+/* ── PATCH updateStats ── */
+const _origUpdateStats = updateStats;
+updateStats = function() {
+  _origUpdateStats();
+  updateIdentityPanel();
+};
+
+/* ── DUNGEON CLEARED POPUP (replace workout popup) ── */
+const _origShowWorkoutPopup = showWorkoutPopup;
+showWorkoutPopup = function(week, dayIdx) {
+  const rd = getHunterRank();
+  const sysMsg = SYSTEM_MSGS[Math.floor(Math.random()*SYSTEM_MSGS.length)];
+  const dayData = DAYS[dayIdx];
+  const exDone = dayData.exercises.filter((_,ei) => isChecked(week, dayIdx, ei)).length;
+  const xpGained = exDone * 2;
+
+  const titleEl = document.getElementById('workout-popup-title');
+  const subEl   = document.getElementById('workout-popup-sub');
+  const statsEl = document.getElementById('workout-popup-stats');
+  if (titleEl) titleEl.textContent = 'DUNGEON CLEARED';
+  if (subEl)   subEl.textContent   = sysMsg;
+  if (statsEl) statsEl.innerHTML = `
+    <div class="workout-popup-stat-row"><span>${dayData.day} — ${dayData.focus}</span></div>
+    <div class="workout-popup-stat-row"><span>Enemies Slain</span><strong>${exDone}/${dayData.exercises.length}</strong></div>
+    <div class="workout-popup-stat-row"><span>XP Gained</span><strong style="color:${rd.color}">+${xpGained} XP</strong></div>
+    <div class="workout-popup-stat-row"><span>Day Streak</span><strong>🔥 ${getStreak()} days</strong></div>
+    <div class="workout-popup-stat-row"><span>Hunter Rank</span><strong style="color:${rd.color}">${rd.letter}-Rank</strong></div>
+  `;
+
+  // Spawn particles
+  const conf = document.getElementById('popup-confetti');
+  if (conf) {
+    conf.innerHTML = '';
+    const cols = [rd.color,'#7c4dff','#448aff','#00e676','#ffffff','#ffd740'];
+    for (let i = 0; i < 32; i++) {
+      const p = document.createElement('div');
+      p.className = 'confetti-piece';
+      p.style.cssText = `left:${Math.random()*100}%;background:${cols[i%cols.length]};animation-delay:${Math.random()*0.6}s;animation-duration:${1.2+Math.random()*1.2}s;transform:rotate(${Math.random()*360}deg)`;
+      conf.appendChild(p);
+    }
+  }
+
+  document.getElementById('workout-popup').classList.add('open');
+  markTodayWorked();
+  updateStats();
+};
+
+/* ── PATCH closeWorkoutPopup to update RPG ── */
+const _origCloseWP = closeWorkoutPopup;
+closeWorkoutPopup = function() {
+  _origCloseWP();
+  updateIdentityPanel();
+};
+
+/* ── INIT ── */
+(function() {
+  const savedTheme = ls('gym_theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  const themeBtn = document.getElementById('theme-btn');
+  if (themeBtn) themeBtn.textContent = savedTheme === 'dark' ? '◐' : '☀';
+
+  bootInit();
+})();
 
