@@ -99,7 +99,7 @@
   </div>
 
   <!-- Daily Challenge -->
-  <div class="hs-challenge" id="hs-challenge-card" onclick="completeDailyChallenge()">
+  <div class="hs-challenge" id="hs-challenge-card" onclick="openQuestModal()">
     <div class="hs-chal-icon" id="hs-chal-icon">🎯</div>
     <div class="hs-chal-info">
       <div class="hs-chal-tag">⚡ DAILY CHALLENGE</div>
@@ -109,7 +109,28 @@
     <div class="hs-chal-xp" id="hs-chal-xp">+0 XP</div>
   </div>
 
-  <!-- Activity Heatmap -->
+  <!-- Fast Food Streak -->
+    <!-- Fast Food / Clean Diet Streak -->
+  <div class="hs-card hs-ff-card">
+    <div class="hs-ff-header">
+      <div>
+        <div class="hs-section-lbl" style="margin-bottom:4px">🍔 CLEAN DIET STREAK</div>
+        <div class="hs-ff-sub">No fast food = streak grows. Slip up = streak resets.</div>
+      </div>
+      <div class="hs-ff-streak-badge" id="hs-ff-badge">
+        <span class="hs-ff-streak-num" id="hs-ff-streak-num">0</span>
+        <span class="hs-ff-streak-lbl">DAYS</span>
+      </div>
+    </div>
+    <div class="hs-ff-best" id="hs-ff-best">Best streak: 0 days</div>
+    <div class="hs-ff-logged" id="hs-ff-logged">Haven't logged today yet 👇</div>
+    <div class="hs-ff-btns">
+      <button class="hs-ff-btn clean" id="hs-ff-btn-clean" onclick="logDietDay(false)">✅ CLEAN TODAY</button>
+      <button class="hs-ff-btn broke" id="hs-ff-btn-broke" onclick="logDietDay(true)">🍔 ATE FAST FOOD</button>
+    </div>
+  </div>
+
+    <!-- Activity Heatmap -->
   <div class="hs-card">
     <div class="hs-section-lbl">12-WEEK ACTIVITY</div>
     <div id="hs-heatmap"></div>
@@ -296,6 +317,21 @@
     <div class="hs-modal-sub" id="hs-quest-sub">COMPLETE ALL FOR +25 BONUS XP</div>
     <div class="hs-quest-list" id="hs-quest-list"></div>
     <button class="hs-quest-claim-btn" id="hs-quest-claim" onclick="claimAllQuests()">CLAIM REWARDS</button>
+  </div>
+</div>
+
+<!-- PWA Install Banner -->
+<div id="hs-install-banner" class="hs-install-banner gone">
+  <div class="hs-install-info">
+    <span class="hs-install-icon">⚔️</span>
+    <div>
+      <div class="hs-install-title">Install Hunter's System</div>
+      <div class="hs-install-sub">Add to home screen for the full experience</div>
+    </div>
+  </div>
+  <div class="hs-install-actions">
+    <button class="hs-install-btn" onclick="pwaInstall()">INSTALL</button>
+    <button class="hs-install-dismiss" onclick="pwaDismiss()">✕</button>
   </div>
 </div>
 

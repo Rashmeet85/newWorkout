@@ -1052,6 +1052,138 @@ function initApp() {
   renderHomePage();
 
   if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(() => {});
+
+  renderFoodStreak();
+}
+
+/* ══════════════════════════════════════════
+   PWA INSTALL PROMPT
+══════════════════════════════════════════ */
+let _deferredInstallPrompt = null;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  _deferredInstallPrompt = e;
+  if (!localStorage.getItem('pwa_install_dismissed')) {
+    const banner = document.getElementById('hs-install-banner');
+    if (banner) banner.classList.remove('gone');
+  }
+});
+
+window.addEventListener('appinstalled', () => {
+  _deferredInstallPrompt = null;
+  const banner = document.getElementById('hs-install-banner');
+  if (banner) banner.classList.add('gone');
+  showToast('⚔️', "Hunter's System installed!");
+});
+
+function pwaInstall() {
+  if (!_deferredInstallPrompt) return;
+  _deferredInstallPrompt.prompt();
+  _deferredInstallPrompt.userChoice.then((choice) => {
+    _deferredInstallPrompt = null;
+    if (choice.outcome === 'accepted') {
+      const banner = document.getElementById('hs-install-banner');
+      if (banner) banner.classList.add('gone');
+    }
+  });
+}
+
+function pwaDismiss() {
+  localStorage.setItem('pwa_install_dismissed', '1');
+  const banner = document.getElementById('hs-install-banner');
+  if (banner) banner.classList.add('gone');
+}
+
+/* ══════════════════════════════════════════
+   FAST FOOD / CLEAN DIET STREAK
+══════════════════════════════════════════ */
+function getDietLog()        { return lsj('diet_log') || {}; }
+function saveDietLog(log)    { lssj('diet_log', log); }
+function getDietBest()       { return parseInt(localStorage.getItem('diet_best_streak') || '0', 10); }
+
+function getDietStreak() {
+  const log   = getDietLog();
+  const today = todayISO();
+  let streak  = 0;
+  let cur     = new Date();
+  cur.setHours(0, 0, 0, 0);
+  // if today is clean, start counting from today; otherwise start from yesterday
+  if (log[today] !== 'clean') cur.setDate(cur.getDate() - 1);
+  while (true) {
+    const iso = cur.getFullYear() + '-' +
+      String(cur.getMonth()+1).padStart(2,'0') + '-' +
+      String(cur.getDate()).padStart(2,'0');
+    if (log[iso] === 'clean') { streak++; cur.setDate(cur.getDate() - 1); }
+    else break;
+  }
+  return streak;
+}
+
+function logDietDay(ateFastFood) {
+  const today = todayISO();
+  const log   = getDietLog();
+
+  if (log[today] === (ateFastFood ? 'broke' : 'clean')) {
+    showToast('⚡', 'Already logged for today!');
+    return;
+  }
+
+  log[today] = ateFastFood ? 'broke' : 'clean';
+  saveDietLog(log);
+
+  const streak = getDietStreak();
+  const best   = getDietBest();
+  if (streak > best) localStorage.setItem('diet_best_streak', String(streak));
+
+  if (ateFastFood) {
+    showToast('🍔', 'Fast food logged. Streak reset. Do better tomorrow!');
+  } else {
+    showToast('✅', 'Clean day! Streak: ' + streak + ' day' + (streak !== 1 ? 's' : '') + '! Keep going!');
+  }
+
+  renderFoodStreak();
+}
+
+function renderFoodStreak() {
+  const streak    = getDietStreak();
+  const best      = Math.max(streak, getDietBest());
+  const today     = todayISO();
+  const log       = getDietLog();
+  const entry     = log[today];
+
+  const numEl     = document.getElementById('hs-ff-streak-num');
+  const bestEl    = document.getElementById('hs-ff-best');
+  const badge     = document.getElementById('hs-ff-badge');
+  const loggedEl  = document.getElementById('hs-ff-logged');
+  const cleanBtn  = document.getElementById('hs-ff-btn-clean');
+  const brokeBtn  = document.getElementById('hs-ff-btn-broke');
+  if (!numEl) return;
+
+  numEl.textContent  = streak;
+  bestEl.textContent = 'Best streak: ' + best + ' day' + (best !== 1 ? 's' : '');
+
+  if (badge) {
+    badge.className = 'hs-ff-streak-badge';
+    if (entry === 'broke')   badge.classList.add('broken');
+    else if (streak >= 30)   badge.classList.add('elite');
+    else if (streak >= 14)   badge.classList.add('great');
+    else if (streak >= 7)    badge.classList.add('good');
+  }
+
+  if (entry) {
+    loggedEl.textContent = entry === 'clean'
+      ? '✅ Today logged as clean!' + (streak > 1 ? ' ' + streak + '-day streak! 🔥' : ' Keep it up!')
+      : '🍔 Fast food today. Streak lost. Fresh start tomorrow.';
+    loggedEl.className = 'hs-ff-logged ' + entry;
+    if (cleanBtn) cleanBtn.disabled = entry === 'clean';
+    if (brokeBtn) brokeBtn.disabled = entry === 'broke';
+  } else {
+    loggedEl.textContent = "Haven't logged today yet 👇";
+    loggedEl.className   = 'hs-ff-logged';
+    if (cleanBtn) cleanBtn.disabled = false;
+    if (brokeBtn) brokeBtn.disabled = false;
+  }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
