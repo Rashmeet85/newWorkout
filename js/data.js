@@ -1850,3 +1850,126 @@ function getLibraryTips(name) {
   }
   return null;
 }
+
+
+/* ── HUNTER RANKS ── */
+/* ── RANK SYSTEM (Strict — 12 weeks ≈ B/A rank max for consistent hunters) ──
+   Full program completion yields ~4800 XP:
+     exercises: ~42 non-cardio/week × 5xp × 12weeks = 2520 XP
+     week bonuses: 12 × 180 = 2160 XP
+   So A-Rank requires near-perfect attendance. S+ are legendary.
+── */
+const RANKS = [
+  { letter: 'E', name: 'E-Rank Hunter',   xpRequired: 0,    color: '#94a3b8', msg: 'You have shown your will. The gates open.' },
+  { letter: 'D', name: 'D-Rank Hunter',   xpRequired: 500,  color: '#34d399', msg: 'Your potential begins to surface, Hunter.' },
+  { letter: 'C', name: 'C-Rank Hunter',   xpRequired: 1400, color: '#60a5fa', msg: 'The System acknowledges your discipline.' },
+  { letter: 'B', name: 'B-Rank Hunter',   xpRequired: 2800, color: '#a78bfa', msg: 'Few reach this level. You are not few.' },
+  { letter: 'A', name: 'A-Rank Hunter',   xpRequired: 4800, color: '#fbbf24', msg: 'Shadows bow before your strength.' },
+  { letter: 'S', name: 'S-Rank Hunter',   xpRequired: 7500, color: '#f59e0b', msg: 'You stand where most cannot even see.' },
+  { letter: 'SS', name: 'SS-Rank Hunter', xpRequired: 11000,color: '#ef4444', msg: 'The gates tremble at your footsteps.' },
+  { letter: 'SSS', name: 'Monarch',       xpRequired: 15000,color: '#8b5cf6', msg: 'You have surpassed all limits. You ARE the System.' },
+];
+
+/* ── CHARACTER IMAGES ── */
+const CHAR_IMAGES = {
+  dark: {
+    E:   'images/dark_e.png',
+    D:   'images/dark_d.png',
+    C:   'images/dark_c.png',
+    B:   'images/dark_b.png',
+    A:   'images/dark_a.png',
+    S:   'images/dark_s.png',
+    SS:  'images/dark_ss.png',
+    SSS: 'images/dark_sss.png',
+  },
+  light: {
+    E:   'images/light_e.png',
+    D:   'images/light_d.png',
+    C:   'images/light_c.png',
+    B:   'images/light_b.png',
+    A:   'images/light_a.png',
+    S:   'images/light_s.png',
+    SS:  'images/light_ss.png',
+    SSS: 'images/light_sss.png',
+  },
+};
+
+/* ── STAT ICONS ── */
+const STAT_ICONS = {
+  dark:  { STR: 'images/str_dark.png',  END: 'images/end_dark.png',  AGI: 'images/agi_dark.png',  WIL: 'images/wil_dark.png'  },
+  light: { STR: 'images/str_light.png', END: 'images/end_light.png', AGI: 'images/agi_light.png', WIL: 'images/wil_light.png' },
+};
+
+/* ── SHADOW ARMY ── */
+const SHADOW_NAMES = [
+  { name: 'Iron',    icon: '⚔️',  req: 10  },
+  { name: 'Tank',    icon: '🛡️',  req: 20  },
+  { name: 'Swift',   icon: '💨',  req: 30  },
+  { name: 'Igris',   icon: '🐉',  req: 50  },
+  { name: 'Beru',    icon: '🦂',  req: 80  },
+  { name: 'Tusk',    icon: '🦷',  req: 100 },
+  { name: 'Kaisel',  icon: '🌊',  req: 140 },
+  { name: 'Greed',   icon: '💀',  req: 200 },
+];
+
+/* ── DAILY CHALLENGES (time-bound, one per day) ── */
+const DAILY_CHALLENGES = [
+  { id:'pushups50',  icon:'💪', title:'IRON WILL',       desc:'Complete 50 push-ups at any point today',         xp:50, category:'strength' },
+  { id:'plank2min',  icon:'🧱', title:'WALL OF IRON',    desc:'Hold a plank for 2 minutes total today',           xp:50, category:'core' },
+  { id:'steps8k',    icon:'🚶', title:'SHADOW MARCH',    desc:'Walk 8,000 steps today',                           xp:60, category:'cardio' },
+  { id:'squat100',   icon:'🦵', title:'MOUNTAIN STANCE', desc:'Do 100 bodyweight squats throughout the day',      xp:55, category:'legs' },
+  { id:'water3l',    icon:'💧', title:'HYDRATION QUEST', desc:'Drink 3 litres of water today',                    xp:40, category:'health' },
+  { id:'sleep8',     icon:'😴', title:'RECOVERY PROTOCOL',desc:'Sleep 8 hours tonight (log when done)',           xp:45, category:'recovery' },
+  { id:'nojunk',     icon:'🥗', title:'CLEAN FUEL',      desc:'Zero junk food or sugary drinks today',            xp:55, category:'nutrition' },
+  { id:'stretch15',  icon:'🧘', title:'FLEX PROTOCOL',   desc:'Do 15 minutes of stretching or yoga today',       xp:40, category:'mobility' },
+  { id:'lunges60',   icon:'🏃', title:'LUNGE ASSAULT',   desc:'Complete 60 walking lunges (30 each leg)',         xp:50, category:'legs' },
+  { id:'dips30',     icon:'⚡', title:'GRAVITY DEFIER',  desc:'Complete 30 dips (bench, bar, or assisted)',       xp:50, category:'strength' },
+  { id:'hiit1',      icon:'🔥', title:'AFTERBURNER',     desc:'Complete any HIIT session from the HIIT tab',      xp:65, category:'cardio' },
+  { id:'journal',    icon:'📔', title:'MIND LOG',        desc:'Write down 3 things you are grateful for',         xp:35, category:'mental' },
+  { id:'coldshower', icon:'🧊', title:'ICE PROTOCOL',    desc:'Take a cold shower (at least 30 seconds cold)',    xp:45, category:'mental' },
+  { id:'nosocial',   icon:'📵', title:'FOCUS MODE',      desc:'No social media for the entire day',               xp:60, category:'mental' },
+  { id:'crunches80', icon:'🔩', title:'CORE CRUSHER',    desc:'Complete 80 crunches or sit-ups today',            xp:50, category:'core' },
+  { id:'jumprope',   icon:'🪢', title:'CARDIO BURST',    desc:'5 minutes of jump rope or high knees',             xp:45, category:'cardio' },
+  { id:'protein',    icon:'🥩', title:'PROTEIN PROTOCOL',desc:'Hit your daily protein target today',              xp:50, category:'nutrition' },
+  { id:'meditation', icon:'🧠', title:'MENTAL FORTRESS', desc:'10 minutes of meditation or breathing exercises',  xp:40, category:'mental' },
+  { id:'earlyworkout',icon:'🌅',title:'DAWN WARRIOR',    desc:'Complete your workout before noon',                xp:60, category:'discipline' },
+  { id:'pullups20',  icon:'🏋️', title:'GRAVITY MASTER',  desc:'Complete 20 pull-ups or lat pulldowns today',     xp:55, category:'strength' },
+  { id:'burpees30',  icon:'💥', title:'BURPEE PROTOCOL', desc:'Complete 30 burpees at any point today',           xp:55, category:'cardio' },
+  { id:'nosnacks',   icon:'🚫', title:'DISCIPLINE',      desc:'No snacking between meals today',                  xp:45, category:'nutrition' },
+  { id:'fullworkout',icon:'⚔️', title:'FULL DUNGEON RUN','desc':'Complete every exercise in today\'s quest',    xp:80, category:'discipline' },
+  { id:'walk30',     icon:'🌿', title:'NATURE WALK',     desc:'Take a 30-minute walk outside',                    xp:40, category:'cardio' },
+  { id:'calories',   icon:'📊', title:'CALORIE CONTROL', desc:'Stay within 200 calories of your daily target',   xp:55, category:'nutrition' },
+  { id:'newpr',      icon:'🏆', title:'BREAK THE LIMIT', desc:'Set a new personal record on any exercise today',  xp:70, category:'strength' },
+  { id:'buddy',      icon:'👥', title:'ALLY QUEST',      desc:'Work out with a friend or training partner',       xp:50, category:'social' },
+  { id:'form',       icon:'🎯', title:'PERFECT FORM',    desc:'Focus on perfect form for every set today',        xp:45, category:'technique' },
+];
+
+/* Get today's challenge (deterministic per calendar day) */
+function getTodayChallenge() {
+  const today = new Date();
+  const dayKey = `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`;
+  // Deterministic index from date
+  let hash = 0;
+  for (let c of dayKey) hash = (hash * 31 + c.charCodeAt(0)) & 0xffff;
+  return DAILY_CHALLENGES[hash % DAILY_CHALLENGES.length];
+}
+
+function getChallengeKey() {
+  const today = new Date();
+  return `hs_challenge_${today.getFullYear()}_${today.getMonth()}_${today.getDate()}`;
+}
+
+function isChallengeCompleted() { return localStorage.getItem(getChallengeKey()) === 'done'; }
+function isChallengeForfeited() { return localStorage.getItem(getChallengeKey()) === 'fail'; }
+function completeChallenge()    { localStorage.setItem(getChallengeKey(), 'done'); }
+function forfeitChallenge()     { localStorage.setItem(getChallengeKey(), 'fail'); }
+
+/* Milliseconds until midnight */
+function msUntilMidnight() {
+  const now = new Date();
+  const midnight = new Date(now); midnight.setHours(24,0,0,0);
+  return midnight - now;
+}
+
+/* Seconds remaining in day */
+function secsUntilMidnight() { return Math.floor(msUntilMidnight() / 1000); }
