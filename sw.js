@@ -1,11 +1,15 @@
 // Service Worker — Hunter's System PWA
-const CACHE_NAME = 'hunters-system-v1';
+const CACHE_NAME = 'hunters-system-v2';
 
 const ASSETS = [
   './',
   './index.html',
   './manifest.json',
   './js/data.js',
+  './js/new_app.js',
+  './css/new.css',
+  './icon-192.png',
+  './icon-512.png',
   './images/dark_e.png',
   './images/dark_d.png',
   './images/dark_c.png',

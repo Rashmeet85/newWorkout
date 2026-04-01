@@ -110,6 +110,15 @@ const RANKS_V4 = [
   { letter:'SSS', name:'Shadow Monarch',   xpRequired:2000, color:'#ff2222', msg:'Arise, Shadow Monarch.' },
 ];
 
+function calcChallengeXP() {
+  // Sum up all past days' challenge XP that was stored
+  return parseInt(localStorage.getItem('hs_total_chal_xp') || '0', 10);
+}
+
+function calcQuestXP() {
+  return parseInt(localStorage.getItem('hs_total_quest_xp') || '0', 10);
+}
+
 function calcTotalXP() {
   let xp = 0;
   xp += getTotalExDone() * XP_PER_EXERCISE;
@@ -117,6 +126,8 @@ function calcTotalXP() {
   xp += getGoals().filter(g => g.done).length * XP_PER_GOAL;
   xp += Object.keys(getPRs()).length * XP_PER_PR;
   xp += Math.min(getStreak(), 84) * XP_PER_STREAK_DAY;
+  xp += calcChallengeXP();
+  xp += calcQuestXP();
   return xp;
 }
 
@@ -428,6 +439,9 @@ function completeDailyChallenge() {
   if (isChallengeCompleted()) return;
   const ch = getTodayChallenge();
   localStorage.setItem(getChallengeKey(), 'done');
+  // Persist challenge XP to running total
+  const prev = parseInt(localStorage.getItem('hs_total_chal_xp') || '0', 10);
+  localStorage.setItem('hs_total_chal_xp', String(prev + ch.xp));
   markTodayWorked();
   renderDailyChallenge();
   showXPPop(ch.xp);
@@ -893,7 +907,7 @@ function renderProfilePage() {
   document.getElementById('hs-profile-msg').textContent  = rd.msg;
 
   const portrait = document.getElementById('hs-portrait');
-  portrait.src   = `images/dark_${rd.letter.toLowerCase()}.png`;
+  portrait.src   = `images/${document.documentElement.getAttribute('data-theme') || 'dark'}_${rd.letter.toLowerCase()}.png`;
   portrait.style.borderColor = rd.color;
   portrait.style.boxShadow   = `0 0 24px ${rd.color}55`;
 
@@ -1002,8 +1016,19 @@ function toggleQuest(id) {
   const q      = quests.find(x => x.id === id);
   if (!q) return;
   const state = getQuestState();
-  if (state[id]) delete state[id];
-  else { state[id] = true; showXPPop(q.xp); showToast(q.icon, `${q.name} — +${q.xp} XP`); }
+  if (state[id]) {
+    delete state[id];
+    // Remove XP from running total when unchecking
+    const prev = parseInt(localStorage.getItem('hs_total_quest_xp') || '0', 10);
+    localStorage.setItem('hs_total_quest_xp', String(Math.max(0, prev - q.xp)));
+  } else {
+    state[id] = true;
+    // Persist XP to running total
+    const prev = parseInt(localStorage.getItem('hs_total_quest_xp') || '0', 10);
+    localStorage.setItem('hs_total_quest_xp', String(prev + q.xp));
+    showXPPop(q.xp);
+    showToast(q.icon, `${q.name} — +${q.xp} XP`);
+  }
   lssj(getDailyQuestKey() + '_state', state);
   renderQuestList();
   checkAndShowRankUp();
@@ -1013,12 +1038,25 @@ function toggleQuest(id) {
 function claimAllQuests() {
   const quests = getDailyQuests();
   const state  = getQuestState();
-  let totalXP  = 0;
-  quests.forEach(q => { if (!state[q.id]) { state[q.id] = true; totalXP += q.xp; } });
-  if (totalXP > 0) totalXP += 25;
+  let earnedXP = 0;
+  quests.forEach(q => {
+    if (!state[q.id]) {
+      state[q.id] = true;
+      earnedXP += q.xp;
+    }
+  });
+  const allNowDone = quests.every(q => state[q.id]);
+  const bonusXP = (allNowDone && earnedXP > 0) ? 25 : 0;
+  const totalXP = earnedXP + bonusXP;
+  if (totalXP > 0) {
+    // Persist to running total
+    const prev = parseInt(localStorage.getItem('hs_total_quest_xp') || '0', 10);
+    localStorage.setItem('hs_total_quest_xp', String(prev + totalXP));
+    showXPPop(totalXP);
+    showToast('⚡', `All quests complete! +${totalXP} XP`);
+  }
   lssj(getDailyQuestKey() + '_state', state);
   markTodayWorked();
-  if (totalXP > 0) { showXPPop(totalXP); showToast('⚡', `All quests complete! +${totalXP} XP`); }
   renderQuestList();
   checkAndShowRankUp();
   if (_activePage === 'home') updateHeroCard();
@@ -1052,9 +1090,174 @@ function initApp() {
   renderHomePage();
 
   if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(() => {});
+
+  renderFoodStreak();
+}
+
+
+/* ══════════════════════════════════════════
+   THEME TOGGLE (Light / Dark)
+══════════════════════════════════════════ */
+function toggleTheme() {
+  const html = document.documentElement;
+  const current = html.getAttribute('data-theme');
+  const next = current === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('hs_theme', next);
+  // Update theme-color meta
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.setAttribute('content', next === 'dark' ? '#080b14' : '#f0f2f8');
+  // Update portrait image
+  const portrait = document.getElementById('hs-portrait');
+  if (portrait) {
+    const rd = getHunterRank();
+    portrait.src = `images/${next}_${rd.letter.toLowerCase()}.png`;
+  }
+  // Update toggle button emoji
+  const btn = document.getElementById('hs-theme-toggle');
+  if (btn) btn.textContent = next === 'dark' ? '☀️' : '🌙';
+}
+
+function initTheme() {
+  const saved = localStorage.getItem('hs_theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', saved);
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.setAttribute('content', saved === 'dark' ? '#080b14' : '#f0f2f8');
+  const btn = document.getElementById('hs-theme-toggle');
+  if (btn) btn.textContent = saved === 'dark' ? '☀️' : '🌙';
+}
+/* ══════════════════════════════════════════
+   PWA INSTALL PROMPT
+══════════════════════════════════════════ */
+let _deferredInstallPrompt = null;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  _deferredInstallPrompt = e;
+  if (!localStorage.getItem('pwa_install_dismissed')) {
+    const banner = document.getElementById('hs-install-banner');
+    if (banner) banner.classList.remove('gone');
+  }
+});
+
+window.addEventListener('appinstalled', () => {
+  _deferredInstallPrompt = null;
+  const banner = document.getElementById('hs-install-banner');
+  if (banner) banner.classList.add('gone');
+  showToast('⚔️', "Hunter's System installed!");
+});
+
+function pwaInstall() {
+  if (!_deferredInstallPrompt) return;
+  _deferredInstallPrompt.prompt();
+  _deferredInstallPrompt.userChoice.then((choice) => {
+    _deferredInstallPrompt = null;
+    if (choice.outcome === 'accepted') {
+      const banner = document.getElementById('hs-install-banner');
+      if (banner) banner.classList.add('gone');
+    }
+  });
+}
+
+function pwaDismiss() {
+  localStorage.setItem('pwa_install_dismissed', '1');
+  const banner = document.getElementById('hs-install-banner');
+  if (banner) banner.classList.add('gone');
+}
+
+/* ══════════════════════════════════════════
+   FAST FOOD / CLEAN DIET STREAK
+══════════════════════════════════════════ */
+function getDietLog()        { return lsj('diet_log') || {}; }
+function saveDietLog(log)    { lssj('diet_log', log); }
+function getDietBest()       { return parseInt(localStorage.getItem('diet_best_streak') || '0', 10); }
+
+function getDietStreak() {
+  const log   = getDietLog();
+  const today = todayISO();
+  let streak  = 0;
+  let cur     = new Date();
+  cur.setHours(0, 0, 0, 0);
+  // if today is clean, start counting from today; otherwise start from yesterday
+  if (log[today] !== 'clean') cur.setDate(cur.getDate() - 1);
+  while (true) {
+    const iso = cur.getFullYear() + '-' +
+      String(cur.getMonth()+1).padStart(2,'0') + '-' +
+      String(cur.getDate()).padStart(2,'0');
+    if (log[iso] === 'clean') { streak++; cur.setDate(cur.getDate() - 1); }
+    else break;
+  }
+  return streak;
+}
+
+function logDietDay(ateFastFood) {
+  const today = todayISO();
+  const log   = getDietLog();
+
+  if (log[today] === (ateFastFood ? 'broke' : 'clean')) {
+    showToast('⚡', 'Already logged for today!');
+    return;
+  }
+
+  log[today] = ateFastFood ? 'broke' : 'clean';
+  saveDietLog(log);
+
+  const streak = getDietStreak();
+  const best   = getDietBest();
+  if (streak > best) localStorage.setItem('diet_best_streak', String(streak));
+
+  if (ateFastFood) {
+    showToast('🍔', 'Fast food logged. Streak reset. Do better tomorrow!');
+  } else {
+    showToast('✅', 'Clean day! Streak: ' + streak + ' day' + (streak !== 1 ? 's' : '') + '! Keep going!');
+  }
+
+  renderFoodStreak();
+}
+
+function renderFoodStreak() {
+  const streak    = getDietStreak();
+  const best      = Math.max(streak, getDietBest());
+  const today     = todayISO();
+  const log       = getDietLog();
+  const entry     = log[today];
+
+  const numEl     = document.getElementById('hs-ff-streak-num');
+  const bestEl    = document.getElementById('hs-ff-best');
+  const badge     = document.getElementById('hs-ff-badge');
+  const loggedEl  = document.getElementById('hs-ff-logged');
+  const cleanBtn  = document.getElementById('hs-ff-btn-clean');
+  const brokeBtn  = document.getElementById('hs-ff-btn-broke');
+  if (!numEl) return;
+
+  numEl.textContent  = streak;
+  bestEl.textContent = 'Best streak: ' + best + ' day' + (best !== 1 ? 's' : '');
+
+  if (badge) {
+    badge.className = 'hs-ff-streak-badge';
+    if (entry === 'broke')   badge.classList.add('broken');
+    else if (streak >= 30)   badge.classList.add('elite');
+    else if (streak >= 14)   badge.classList.add('great');
+    else if (streak >= 7)    badge.classList.add('good');
+  }
+
+  if (entry) {
+    loggedEl.textContent = entry === 'clean'
+      ? '✅ Today logged as clean!' + (streak > 1 ? ' ' + streak + '-day streak! 🔥' : ' Keep it up!')
+      : '🍔 Fast food today. Streak lost. Fresh start tomorrow.';
+    loggedEl.className = 'hs-ff-logged ' + entry;
+    if (cleanBtn) cleanBtn.disabled = entry === 'clean';
+    if (brokeBtn) brokeBtn.disabled = entry === 'broke';
+  } else {
+    loggedEl.textContent = "Haven't logged today yet 👇";
+    loggedEl.className   = 'hs-ff-logged';
+    if (cleanBtn) cleanBtn.disabled = false;
+    if (brokeBtn) brokeBtn.disabled = false;
+  }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  initTheme();
   const hasName = !!ls('hunter_name');
   if (!hasName) {
     document.getElementById('hs-onboard').classList.remove('gone');
